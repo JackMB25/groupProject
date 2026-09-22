@@ -6,7 +6,8 @@ public class Main {
     public static void main(String[] args) {
         //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
         // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Jack likes girls!");
+        System.out.printf("Jack is stubborn cunt, and smart ass making fun of people whos english isnt their first" +
+                " language although jack knows only one languege and pretty damn badly сука соси хуй");
 
         for (int i = 1; i <= 5; i++) {
             //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
