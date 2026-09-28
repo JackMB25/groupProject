@@ -17,3 +17,13 @@ To do (Individual):
 - write database connection code - Reuben/Yurii
 - 
 
+
+
+
+CODE OF CONDUCT:
+- All members must contribute to assigned work or be docked points as detailed by Dr Kevin Sim.
+- All members must attend weekly team meetings or owe team members a hot chocolate unless --> If missing a meeting, advise the team in advance with notes on your contribution.
+- Treat other team members with respect and build each other's confidence. (forms of bullying acceptable)
+- Always leave tags and comments when committing changes.
+- When committing code notify team members to avoid confusion when pulling from github. 
+- Protect group intellectual property, avoid sharing sensitive credentials or API keys in public channels, and use approved software tools only.
