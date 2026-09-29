@@ -38,3 +38,11 @@ English.
 Hindi.
 Spanish.
 Arabic.
+
+Post 1st code review: 
+CR1 completed — 13/20 (65%)
+Product Backlog was missing at the time of review — now added
+Code of Conduct received partial credit — separate CODE_OF_CONDUCT.md now added
+Dockerfile received partial credit — review what needs improving before CR2
+GitFlow received partial credit — use the branching workflow consistently going forward
+Next focus: CR2 requirements, user stories, Kanban/project board, use cases and continued team contributions
