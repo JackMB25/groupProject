@@ -21,8 +21,8 @@ jobs:
           docker pull mongo:4.4
           docker run -d --name mongo-dbserver --network se-methods mongo:4.4
 
-      - name: Compile with Maven
-        run: mvn compile
+      - name: Build with Maven
+        run: mvn package
 
       - name: Build Docker Image
         run: docker build -t devopsimage .
