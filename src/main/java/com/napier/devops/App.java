@@ -7,6 +7,12 @@ import org.bson.Document;
 
 public class App
 {
+    /**
+     * javaDOC
+     * @param args Main entry point for the app
+     *             Connects to the MongoDB database create a test document,
+     *             stores it in collection, retrives and prints the document
+     */
     public static void main(String[] args)
     {
 // Connect to MongoDB
