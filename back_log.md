@@ -46,3 +46,12 @@ Code of Conduct received partial credit — separate CODE_OF_CONDUCT.md now adde
 Dockerfile received partial credit — review what needs improving before CR2
 GitFlow received partial credit — use the branching workflow consistently going forward
 Next focus: CR2 requirements, user stories, Kanban/project board, use cases and continued team contributions
+
+COMPLETED:
+- Docker/CI fix completed: Maven was not generating the self-contained JAR in GitHub Actions.
+- Added Maven Assembly Plugin configuration and updated Dockerfile to use the generated JAR.
+- Updated CI to use MongoDB 4.4 and the se-methods Docker network.
+- GitHub Actions now passes successfully.
+
+
+
