@@ -9,13 +9,16 @@ public class App
     /**
      * Connection to MySQL database.
      */
-    private Connection con = null;
+    private static Connection con = null;
 
     public static void main(String[] args)
     {
         App app = new App();
 
         app.connect();
+
+        LanguageReport lr = new LanguageReport();
+        lr.getLanguageSpeakers(con);
 
         // Database operations will go here later
 
