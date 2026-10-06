@@ -31,7 +31,7 @@ public class PopulationReport {
         try {
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(
-                    "Select country.Name as 'Country Name', city.Name as 'City Name', city.Population  FROM city JOIN country on city.ID = country.Capital ORDER BY city.population DESC;"
+                    "Select country.Name as 'Country Name', city.Name as 'City Name',city.Population FROM city JOIN country on city.ID = country.Capital ORDER BY city.population DESC;"
             );
 
             while (rs.next()) {
