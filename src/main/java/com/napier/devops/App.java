@@ -28,6 +28,7 @@ public class App
 
         // test language report function
         lr.getLanguageSpeakers();
+        pr.getAllCapitalsByPopulation();
 
         // Database operations will go here later
 
