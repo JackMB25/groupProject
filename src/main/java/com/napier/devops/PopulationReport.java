@@ -1,6 +1,6 @@
 package com.napier.devops;
 
-import java.sql.Connection;
+import java.sql.*;
 
 public class PopulationReport {
 
@@ -27,4 +27,23 @@ public class PopulationReport {
 
     // getCityPopulation()
 
+    public void getAllCapitalsByPopulation() {
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(
+                    "Select country.Name as 'Country Name', city.Name as 'City Name',city.Population FROM city JOIN country on city.ID = country.Capital ORDER BY city.population DESC;"
+            );
+
+            while (rs.next()) {
+                System.out.println(
+                        rs.getString("Country Name") + " - " +
+                                rs.getString("City Name")  + " - " +
+                                rs.getInt("city.Population")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+
+    }
 }
