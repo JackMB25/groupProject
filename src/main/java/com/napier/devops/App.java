@@ -17,8 +17,17 @@ public class App
 
         app.connect();
 
-        LanguageReport lr = new LanguageReport();
-        lr.getLanguageSpeakers(con);
+        // create objects for each type of reports
+        LanguageReport lr = new LanguageReport(con);
+
+        CityReport cir = new CityReport(con);
+
+        CountryReport ctryr = new CountryReport(con);
+
+        PopulationReport pr = new PopulationReport(con);
+
+        // test language report function
+        lr.getLanguageSpeakers();
 
         // Database operations will go here later
 
