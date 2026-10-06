@@ -7,9 +7,14 @@ import java.sql.Statement;
 
 public class LanguageReport {
 
+    private Connection con;
+
+    public LanguageReport(Connection con) {
+        this.con = con;
+    }
     // getLanguageSpeakers()
 
-    public void getLanguageSpeakers(Connection con) {
+    public void getLanguageSpeakers() {
         try {
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(
