@@ -33,6 +33,9 @@ public class App
         cir.getAllCitiesWorld();
         cir.getAllCitiesByContinent("Europe");
         cir.getAllCitiesByRegion("British Islands");
+        cir.getAllCitiesByCountry("United Kingdom");
+        cir.getAllCitiesByDistrict("Scotland");
+        cir.getTopCitiesWorld(10);
 
         // Database operations will go here later
 
