@@ -56,8 +56,30 @@ public class CityReport {
         }
 
     }
+    /**
+     * Prints all cities in a region, ordered by population (largest first).
+     * @param region the region to report on, e.g. "British Islands"
+     */
+    public void getAllCitiesByRegion(String region) {
+        try {
+            PreparedStatement stmt = con.prepareStatement(
+                    "SELECT city.Name, country.Name AS Country, city.District, city.Population FROM city JOIN country ON city.CountryCode = country.Code WHERE country.Region = ? ORDER BY city.Population DESC;"
+            );
+            stmt.setString(1, region);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                System.out.println(
+                        rs.getString("Name") + " - " +
+                                rs.getString("Country") + " - " +
+                                rs.getString("District") + " - " +
+                                rs.getInt("Population")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
 
-
+    }
     // getAllCapitalsWorld()
 
     // getAllCapitalsByContinent()
