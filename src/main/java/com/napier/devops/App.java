@@ -30,6 +30,8 @@ public class App
         lr.getLanguageSpeakers();
         pr.getAllCapitalsByPopulation();
 
+        cir.getAllCitiesWorld();
+
         // Database operations will go here later
 
         app.disconnect();
