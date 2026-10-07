@@ -230,6 +230,32 @@ public class CityReport {
         }
 
     }
+    /** 10
+     * Prints the top N most populated cities in a district.
+     * @param district the district to report on, e.g. "Scotland"
+     * @param n the number of cities to show
+     */
+    public void getTopCitiesByDistrict(String district, int n) {
+        try {
+            PreparedStatement stmt = con.prepareStatement(
+                    "SELECT city.Name, country.Name AS Country, city.District, city.Population FROM city JOIN country ON city.CountryCode = country.Code WHERE city.District = ? ORDER BY city.Population DESC limit ?;"
+            );
+            stmt.setString(1, district);
+            stmt.setInt(2, n);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                System.out.println(
+                        rs.getString("Name") + " - " +
+                                rs.getString("Country") + " - " +
+                                rs.getString("District") + " - " +
+                                rs.getInt("Population")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+
+    }
     // getAllCapitalsWorld()
 
     // getAllCapitalsByContinent()

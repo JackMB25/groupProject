@@ -39,6 +39,7 @@ public class App
         cir.getTopCitiesByContinent("Europe", 5);
         cir.getTopCitiesByRegion("British Islands", 5);
         cir.getTopCitiesByCountry("United Kingdom", 5);
+        cir.getTopCitiesByDistrict("Scotland", 3);
 
         // Database operations will go here later
 
