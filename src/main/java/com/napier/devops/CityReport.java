@@ -10,7 +10,7 @@ public class CityReport {
         this.con = con;
     }
     /**
-     * Prints all cities in the world, ordered by population (largest first).
+     * 1 Prints all cities in the world, ordered by population (largest first).
      */
     public void getAllCitiesWorld() {
         try {
@@ -32,7 +32,7 @@ public class CityReport {
         }
 
     }
-    /**
+    /** 2
      * Prints all cities in a continent, ordered by population (largest first).
      * @param continent the continent to report on, e.g. "Europe"
      */
@@ -56,7 +56,7 @@ public class CityReport {
         }
 
     }
-    /**
+    /** 3
      * Prints all cities in a region, ordered by population (largest first).
      * @param region the region to report on, e.g. "British Islands"
      */
@@ -80,7 +80,7 @@ public class CityReport {
         }
 
     }
-    /**
+    /** 4
      * Prints all cities in a country, ordered by population (largest first).
      * @param country the country to report on, e.g. "United Kingdom"
      */
@@ -104,7 +104,7 @@ public class CityReport {
         }
 
     }
-    /**
+    /** 5
      * Prints all cities in a district, ordered by population (largest first).
      * @param district the district to report on, e.g. "Scotland"
      */
@@ -128,7 +128,7 @@ public class CityReport {
         }
 
     }
-    /**
+    /** 6
      * Prints the top N most populated cities in the world.
      * @param n the number of cities to show
      */
@@ -152,7 +152,7 @@ public class CityReport {
         }
 
     }
-    /**
+    /** 7
      * Prints the top N most populated cities in a continent.
      * @param continent the continent to report on, e.g. "Europe"
      * @param n the number of cities to show
@@ -178,6 +178,33 @@ public class CityReport {
         }
 
     }
+    /** 8
+     * Prints the top N most populated cities in a region.
+     * @param region the region to report on, e.g. "British Islands"
+     * @param n the number of cities to show
+     */
+    public void getTopCitiesByRegion(String region, int n) {
+        try {
+            PreparedStatement stmt = con.prepareStatement(
+                    "SELECT city.Name, country.Name AS Country, city.District, city.Population FROM city JOIN country ON city.CountryCode = country.Code WHERE country.Region = ? ORDER BY city.Population DESC limit ?;"
+            );
+            stmt.setString(1, region);
+            stmt.setInt(2, n);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                System.out.println(
+                        rs.getString("Name") + " - " +
+                                rs.getString("Country") + " - " +
+                                rs.getString("District") + " - " +
+                                rs.getInt("Population")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+
+    }
+
     // getAllCapitalsWorld()
 
     // getAllCapitalsByContinent()
