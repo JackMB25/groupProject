@@ -152,6 +152,32 @@ public class CityReport {
         }
 
     }
+    /**
+     * Prints the top N most populated cities in a continent.
+     * @param continent the continent to report on, e.g. "Europe"
+     * @param n the number of cities to show
+     */
+    public void getTopCitiesByContinent(String continent, int n) {
+        try {
+            PreparedStatement stmt = con.prepareStatement(
+                    "SELECT city.Name, country.Name AS Country, city.District, city.Population FROM city JOIN country ON city.CountryCode = country.Code WHERE country.Continent = ? ORDER BY city.Population DESC LIMIT ?;"
+            );
+            stmt.setString(1, continent);
+            stmt.setInt(2, n);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                System.out.println(
+                        rs.getString("Name") + " - " +
+                                rs.getString("Country") + " - " +
+                                rs.getString("District") + " - " +
+                                rs.getInt("Population")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+
+    }
     // getAllCapitalsWorld()
 
     // getAllCapitalsByContinent()
