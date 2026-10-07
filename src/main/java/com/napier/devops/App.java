@@ -31,6 +31,7 @@ public class App
         pr.getAllCapitalsByPopulation();
 
         cir.getAllCitiesWorld();
+        cir.getAllCitiesByContinent("Europe");
 
         // Database operations will go here later
 
