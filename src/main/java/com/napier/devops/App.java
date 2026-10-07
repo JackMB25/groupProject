@@ -38,6 +38,7 @@ public class App
         cir.getTopCitiesWorld(10);
         cir.getTopCitiesByContinent("Europe", 5);
         cir.getTopCitiesByRegion("British Islands", 5);
+        cir.getTopCitiesByCountry("United Kingdom", 5);
 
         // Database operations will go here later
 
