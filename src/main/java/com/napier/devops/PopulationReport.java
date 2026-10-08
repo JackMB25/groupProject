@@ -213,4 +213,29 @@ public class PopulationReport {
             System.out.println(e);
         }
     }
+
+    /**
+     * Gets and displays population that live in and out of cities by continent from the World database.
+     * @param continent is the name of the continent
+     */
+    public void getInOutPopulationByContinent(String continent) {
+        try {
+            PreparedStatement stmt = con.prepareStatement(
+                    "SELECT country.Continent AS 'Continent', sum(country.Population - city.CityPopulation) AS 'PopulationOutOfCities', sum(city.CityPopulation) AS 'PopulationInCities', sum(country.Population) AS 'TotalPopulationOfTheContinent' FROM country JOIN ( SELECT CountryCode, SUM(Population) AS CityPopulation FROM city GROUP BY CountryCode) city ON country.Code = city.CountryCode WHERE country.Continent = ? GROUP BY country.Continent ORDER BY country.Continent ASC;"
+            );
+            stmt.setString(1, continent);
+            ResultSet rs = stmt.executeQuery();
+            System.out.println("Continent | Population out of cities | Population in cities | Total population in the continent");
+            while (rs.next()) {
+                System.out.println(
+                        rs.getString("Continent") + " | " +
+                                rs.getLong("PopulationOutOfCities") + " | " +
+                                rs.getLong("PopulationInCities") + " | " +
+                                rs.getLong("TotalPopulationOfTheContinent")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
 }

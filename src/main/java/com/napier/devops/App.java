@@ -65,6 +65,9 @@ public class App
         // Getting Population of a city
         pr.getCityPopulation("Edinburgh");
 
+        // Getting Population in and out of cities by continent
+        pr.getInOutPopulationByContinent("Europe");
+
 
         // Database operations will go here later
 
