@@ -139,4 +139,31 @@ public class CityReport {
             System.out.println(e);
         }
     }
+
+
+    // Top N cities in a country #20
+    public void getTopCitiesInCountry(String country, int n){
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(
+                    "SELECT city.Name AS cName, country.Name AS countryName, city.Population AS cPop FROM city JOIN country ON city.CountryCode = country.Code WHERE country.Name = '" + country + "' ORDER BY city.Population DESC LIMIT " + n + ";"            );
+
+            System.out.println("========================================");
+            System.out.println("Top " + n + " Cities in " + country + " by Population");
+            System.out.println("========================================");
+            System.out.printf("%-20s %-15s %15s%n", "City", "Country", "Population");
+            System.out.println("------------------------------------------------------------");
+
+            while (rs.next()) {
+                System.out.printf(
+                        "%-20s %-15s %,15d%n",
+                        rs.getString("cName"),
+                        rs.getString("countryName"),
+                        rs.getInt("cPop")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
 }

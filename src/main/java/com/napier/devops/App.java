@@ -26,6 +26,7 @@ public class App
 
         PopulationReport pr = new PopulationReport(con);
 
+
         // Getting Population of the world
 
         pr.getWorldPopulation();
@@ -51,6 +52,10 @@ public class App
         pr.getInOutPopulationByCountry("Cuba"); // Replace "..." with input reader
 
         // Getting Population in and out of cities by region
+
+        //Getting N populated Cities in Country
+//        cir.getTopCitiesInCountry("Italy", 5);
+
 
         pr.getInOutPopulationByRegion("Caribbean"); // Replace "..." with input reader
         // test language report function
