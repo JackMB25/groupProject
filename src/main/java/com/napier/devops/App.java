@@ -26,33 +26,9 @@ public class App
 
         PopulationReport pr = new PopulationReport(con);
 
-        // Getting Population of the world
-
-        pr.getWorldPopulation();
-
-        // Getting Population of a continent
-
-        pr.getContinentPopulation();
-
-        // Getting Population of a region
-
-        pr.getRegionPopulation();
-
-        // Getting Population of a country
-
-        pr.getCountryPopulation();
-
-        // Getting Population of a district
-
-        pr.getDistrictPopulation();
-
-        // Getting Population in and out of cities by country
-
-        pr.getInOutPopulationByCountry();
-
-        // Getting Population in and out of cities by region
-
-        pr.getInOutPopulationByRegion();
+        // test language report function
+        lr.getLanguageSpeakers();
+        pr.getAllCapitalsByPopulation();
 
         // Database operations will go here later
 

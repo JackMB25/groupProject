@@ -1,9 +1,6 @@
 package com.napier.devops;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class PopulationReport {
 
@@ -158,13 +155,18 @@ public class PopulationReport {
                     "SELECT country.region AS 'Region', sum(country.Population - city.CityPopulation) AS 'PopulationOutOfCities', sum(city.CityPopulation) AS 'PopulationInCities', sum(country.Population) AS 'TotalPopulationOfTheRegion' FROM country JOIN ( SELECT CountryCode, SUM(Population) AS CityPopulation FROM city GROUP BY CountryCode) city ON country.Code = city.CountryCode GROUP BY country.region ORDER BY country.Region ASC;"
             );
 
-            System.out.println("Region | Population out of cities | Population in cities | Total population in the region");
+    public void getAllCapitalsByPopulation() {
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(
+                    "Select country.Name as 'Country Name', city.Name as 'City Name',city.Population FROM city JOIN country on city.ID = country.Capital ORDER BY city.population DESC;"
+            );
+
             while (rs.next()) {
                 System.out.println(
-                        rs.getString("Region") + " | " +
-                                rs.getLong("PopulationOutOfCities") + " | " +
-                                rs.getLong("PopulationInCities") + " | " +
-                                rs.getLong("TotalPopulationOfTheRegion")
+                        rs.getString("Country Name") + " - " +
+                                rs.getString("City Name")  + " - " +
+                                rs.getInt("city.Population")
                 );
             }
         } catch (SQLException e) {
