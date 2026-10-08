@@ -68,6 +68,8 @@ public class App
         // Getting Population in and out of cities by continent
         pr.getInOutPopulationByContinent("Europe");
 
+        // Getting top N populated capital cities in the world
+        pr.getTopCapitalsWorld(5);
 
         // Database operations will go here later
 

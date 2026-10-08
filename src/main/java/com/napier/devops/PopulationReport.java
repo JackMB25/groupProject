@@ -238,4 +238,28 @@ public class PopulationReport {
             System.out.println(e);
         }
     }
+
+    /**
+     * Gets and displays the top N populated capital cities in the world.
+     * @param n is the number of capital cities to show
+     */
+    public void getTopCapitalsWorld(int n) {
+        try {
+            PreparedStatement stmt = con.prepareStatement(
+                    "SELECT country.Name AS 'Country Name', city.Name AS 'City Name', city.Population FROM city JOIN country ON city.ID = country.Capital ORDER BY city.Population DESC LIMIT ?;"
+            );
+            stmt.setInt(1, n);
+            ResultSet rs = stmt.executeQuery();
+            System.out.println("Capital | Country | Population");
+            while (rs.next()) {
+                System.out.println(
+                        rs.getString("City Name") + " | " +
+                                rs.getString("Country Name") + " | " +
+                                rs.getInt("Population")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
 }
