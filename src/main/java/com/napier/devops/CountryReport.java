@@ -87,30 +87,9 @@ public class CountryReport {
 
     // getTopCountriesWorld()
 
+
     // getTopCountriesByContinent()
 
     // getTopCountriesByRegion()
 
-    /**
-     * Prints the top N countries in the world by Population
-     * @param Number how many countries to be shown
-     */
-
-    public void getTopNCountriesInWorld(int Number) {
-        try {
-        Statement stmt = con.createStatement();
-        ResultSet rs = stmt.executeQuery(
-                "SELECT country.Name as 'Country Name', country.Population as 'Country Population' FROM country ORDER By country.Population DESC LIMIT " + Number );
-
-        while (rs.next()) {
-            System.out.println(
-                    rs.getString("Country Name") + " - " +
-                            rs.getInt("Country Population")
-            );
-        }
-    } catch (
-    SQLException e) {
-        System.out.println(e);
-    }
-}
 }
