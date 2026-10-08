@@ -190,4 +190,27 @@ public class PopulationReport {
             System.out.println(e);
         }
     }
+
+    /**
+     * Gets and displays the population of a city from the World database.
+     * @param city is the name of the city
+     */
+    public void getCityPopulation(String city) {
+        try {
+            PreparedStatement stmt = con.prepareStatement(
+                    "SELECT Name, Population FROM city WHERE Name = ?;"
+            );
+            stmt.setString(1, city);
+            ResultSet rs = stmt.executeQuery();
+            System.out.println("City name | Population");
+            while (rs.next()) {
+                System.out.println(
+                        rs.getString("Name") + " | " +
+                                rs.getInt("Population")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
 }

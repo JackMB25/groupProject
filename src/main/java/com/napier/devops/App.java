@@ -62,6 +62,10 @@ public class App
         lr.getLanguageSpeakers();
         pr.getAllCapitalsByPopulation();
 
+        // Getting Population of a city
+        pr.getCityPopulation("Edinburgh");
+
+
         // Database operations will go here later
 
         app.disconnect();
