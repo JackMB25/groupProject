@@ -27,6 +27,10 @@ public class PopulationReport {
 
     // getCityPopulation()
 
+
+    /**
+     * Prints all Capital Cities ordered by their population
+     */
     public void getAllCapitalsByPopulation() {
         try {
             Statement stmt = con.createStatement();
