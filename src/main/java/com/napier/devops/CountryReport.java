@@ -13,12 +13,79 @@ public class CountryReport {
         this.con = con;
     }
 
+    /**
+     * Gets the population of each country in the world
+     */
     // getAllCountriesWorld()
+    public void getAllCountriesWorld() {
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(
+                    "SELECT c.Name AS cName, c.Population AS cPop FROM country as c ORDER BY cPop DESC;"
+            );
+
+            System.out.println("Name | Population");
+            while (rs.next()) {
+                System.out.println(
+                        rs.getString("cName") + " - " +
+                                rs.getInt("cPop")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
 
 
+    /**
+     * Gets the population of all countries in a selected continent
+     * @param continent user selected continent for query
+     */
     // getAllCountriesByContinent()
+    public void getAllCountriesByContinent(String continent) {
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(
+                    "SELECT c.Name AS cName, c.Population AS cPop FROM country as c WHERE c.Continent='" + continent +"' ORDER BY cPop DESC;"
+            );
 
+            System.out.println("Name | Population");
+            while (rs.next()) {
+                System.out.println(
+                        rs.getString("cName") + " - " +
+                                rs.getInt("cPop")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
+
+    /**
+     * Gets the population of all countries in a selected region
+     * @param region user selected region for query
+     */
     // getAllCountriesByRegion()
+    public void getAllCountriesByRegion(String region) {
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(
+                    "SELECT c.Name AS cName, c.Population AS cPop FROM country as c WHERE c.Region='" + region +"' ORDER BY cPop DESC;"
+            );
+
+            System.out.println("Name | Population");
+            while (rs.next()) {
+                System.out.println(
+                        rs.getString("cName") + " - " +
+                                rs.getInt("cPop")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
+
+    // getTopCountriesWorld()
 
     // getTopCountriesByContinent()
 
