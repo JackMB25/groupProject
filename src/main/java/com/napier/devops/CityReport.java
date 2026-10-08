@@ -13,11 +13,100 @@ public class CityReport {
         this.con = con;
     }
 
-    // getAllCapitalsWorld()
+    /**
+     * Gets the population of each city in the world
+     */
+    // getAllCities()
+    public void getAllCitiesWorld() {
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(
+                    "SELECT c.Name AS cName, c.Population AS cPop FROM city as c ORDER BY cPop DESC;"
+            );
 
-    // getAllCapitalsByContinent()
+            System.out.println("Name | Population");
+            while (rs.next()) {
+                System.out.println(
+                        rs.getString("cName") + " - " +
+                                rs.getInt("cPop")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
 
-    // getAllCapitalsByRegion()
+    /**
+     * Gets the population of all cities in the continent chosen by the user
+     * @param Continent user selected continent for query
+     */
+    // getAllCitiesByContinent()
+    public void getAllCitiesByContinent(String Continent) {
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(
+                    "SELECT c.Name AS cName, c.Population AS cPop FROM city as c, country AS ctry WHERE c.CountryCode = ctry.Code AND ctry.Continent ='" + Continent + "' ORDER BY cPop DESC;"
+            );
+
+            System.out.println("Name | Population");
+            while (rs.next()) {
+                System.out.println(
+                        rs.getString("cName") + " - " +
+                                rs.getInt("cPop")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
+
+    /**
+     * Gets the population of all cities in the region chosen by the user
+     * @param Region user selected region for query
+     */
+    // getAllCitiesByRegion()
+    public void getAllCitiesByRegion(String Region) {
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(
+                    "SELECT c.Name AS cName, c.Population AS cPop FROM city as c, country AS ctry WHERE c.CountryCode = ctry.Code AND ctry.Region ='" + Region + "' ORDER BY cPop DESC;"
+            );
+
+            System.out.println("Name | Population");
+            while (rs.next()) {
+                System.out.println(
+                        rs.getString("cName") + " - " +
+                                rs.getInt("cPop")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
+
+    /**
+     * Gets the population of all cities in the district chosen by the user
+     * @param District user selected district for query
+     */
+    // getAllCitiesByDistrict
+    public void getAllCitiesByDistrict(String District) {
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(
+                    "SELECT c.Name AS cName, c.Population AS cPop FROM city as c WHERE ctry.District ='" + District + "' ORDER BY cPop DESC;"
+            );
+
+            System.out.println("Name | Population");
+            while (rs.next()) {
+                System.out.println(
+                        rs.getString("cName") + " - " +
+                                rs.getInt("cPop")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
 
     // getTopCapitalsWorld()
 
@@ -44,6 +133,33 @@ public class CityReport {
                         rs.getString("City Name") + " - " +
                                 rs.getString("Country Name") + " - " +
                                 rs.getInt("cities.Population")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
+
+
+    // Top N cities in a country #20
+    public void getTopCitiesInCountry(String country, int n){
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(
+                    "SELECT city.Name AS cName, country.Name AS countryName, city.Population AS cPop FROM city JOIN country ON city.CountryCode = country.Code WHERE country.Name = '" + country + "' ORDER BY city.Population DESC LIMIT " + n + ";"            );
+
+            System.out.println("========================================");
+            System.out.println("Top " + n + " Cities in " + country + " by Population");
+            System.out.println("========================================");
+            System.out.printf("%-20s %-15s %15s%n", "City", "Country", "Population");
+            System.out.println("------------------------------------------------------------");
+
+            while (rs.next()) {
+                System.out.printf(
+                        "%-20s %-15s %,15d%n",
+                        rs.getString("cName"),
+                        rs.getString("countryName"),
+                        rs.getInt("cPop")
                 );
             }
         } catch (SQLException e) {
