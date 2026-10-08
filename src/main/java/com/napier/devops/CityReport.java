@@ -36,7 +36,17 @@ public class CityReport {
         }
     }
 
-
+    /**
+     * Gets the population of all cities in the continent chosen by the user
+     * @param Continent user selected continent for query
+     */
+    // getAllCitiesByContinent()
+    public void getAllCitiesByContinent(String Continent) {
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(
+                    "SELECT c.Name AS cName, c.Population AS cPop FROM city as c, country AS ctry WHERE c.CountryCode = ctry.Code AND ctry.Continent ='" + Continent + "' ORDER BY cPop DESC;"
+            );
 
             System.out.println("Name | Population");
             while (rs.next()) {
@@ -102,16 +112,12 @@ public class CityReport {
 
     // getTopCapitalsByContinent()
 
-
-
-    // getCitiesInCountryByPopulation()
-
+    // getTopCapitalsByRegion()
 
     /**
      * Takes the parameter 'Country' and returns all cities in that country by population
      * @param Country the name of the country, e.g. "Italy"
      */
-
     public void getCitiesInCountryByPopulation(String Country) {
         try {
             Statement stmt = con.createStatement();
@@ -130,12 +136,10 @@ public class CityReport {
         }
     }
 
-
     /**
      * returns all capital cities and their population from a continent
      * @param Name this is the name of the continent from which to find the Capital cities
      */
-
     public void getCapitalsInContinentByPopulation(String Name) {
         try {
             Statement stmt = con.createStatement();
@@ -152,7 +156,6 @@ public class CityReport {
         } catch (SQLException e) {
             System.out.println(e);
         }
-
     }
 
     /**
@@ -176,7 +179,6 @@ public class CityReport {
             System.out.println(e);
         }
     }
-
 
     // Top N cities in a country #20
     public void getTopCitiesInCountry(String country, int n){
