@@ -26,6 +26,33 @@ public class App
 
         PopulationReport pr = new PopulationReport(con);
 
+        // Getting Population of the world
+
+        pr.getWorldPopulation();
+
+        // Getting Population of a continent
+
+        pr.getContinentPopulation("North America"); // Replace "..." with input reader
+
+        // Getting Population of a region
+
+        pr.getRegionPopulation("Caribbean");    // Replace "..." with input reader
+
+        // Getting Population of a country
+
+        pr.getCountryPopulation("Cuba");    // Replace "..." with input reader
+
+        // Getting Population of a district
+
+        pr.getDistrictPopulation("Herat");  // Replace "..." with input reader
+
+        // Getting Population in and out of cities by country
+
+        pr.getInOutPopulationByCountry("Cuba"); // Replace "..." with input reader
+
+        // Getting Population in and out of cities by region
+
+        pr.getInOutPopulationByRegion("Caribbean"); // Replace "..." with input reader
         // test language report function
         lr.getLanguageSpeakers();
         pr.getAllCapitalsByPopulation();

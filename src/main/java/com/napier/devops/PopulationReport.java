@@ -11,8 +11,7 @@ public class PopulationReport {
     }
 
     /**
-     * Gets and displays the total population of the world
-     * from the World database.
+     * Gets and displays the total population of the world from the World database.
      */
     public void getWorldPopulation() {
         try {
@@ -32,20 +31,20 @@ public class PopulationReport {
     }
 
     /**
-     * Gets and displays the total population of the continent
-     * from the World database.
+     * \Gets and displays the total population of the continent from the World database.
+     * @param continent Is the name of the continent.
      */
-    public void getContinentPopulation() {
+    public void getContinentPopulation(String continent) {
         try {
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(
-                    "SELECT Continent, SUM(Population) as sumPopulation FROM country GROUP BY Continent ORDER BY Continent ASC;"
+                    "SELECT Name, Population FROM country WHERE Continent='" + continent + "' ORDER BY Name ASC;"
             );
-            System.out.println("Continent name | Total population");
+            System.out.println("Name | Total population");
             while (rs.next()) {
                 System.out.println(
-                        rs.getString("Continent") + " | " +
-                                rs.getLong("sumPopulation")
+                        rs.getString("Name") + " | " +
+                                rs.getLong("Population")
                 );
             }
         } catch (SQLException e) {
@@ -54,14 +53,14 @@ public class PopulationReport {
     }
 
     /**
-     * Gets and displays the total population of the region
-     * from the World database.
+     * Gets and displays the total population of the region from the World database.
+     * @param region is the name of the region
      */
-    public void getRegionPopulation() {
+    public void getRegionPopulation(String region) {
         try {
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(
-                    "SELECT Region, SUM(Population) as sumPopulation FROM country GROUP BY Region ORDER BY Region ASC;"
+                    "SELECT Region, SUM(Population) as sumPopulation FROM country WHERE Region='" + region + "';"
             );
             System.out.println("Region name | Total population");
             while (rs.next()) {
@@ -76,20 +75,20 @@ public class PopulationReport {
     }
 
     /**
-     * Gets and displays the total population of the country
-     * from the World database.
+     * Gets and displays the total population of the country from the World database.
+     * @param country is the name of the country.
      */
-    public void getCountryPopulation() {
+    public void getCountryPopulation(String country) {
         try {
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(
-                    "SELECT Name as CountryName, SUM(Population) as sumPopulation FROM country GROUP BY Name ORDER BY Name ASC;"
+                    "SELECT Name, Population FROM country WHERE Name='" + country + "';"
             );
             System.out.println("Country name | Total population");
             while (rs.next()) {
                 System.out.println(
-                        rs.getString("CountryName") + " | " +
-                                rs.getLong("sumPopulation")
+                        rs.getString("Name") + " | " +
+                                rs.getLong("Population")
                 );
             }
         } catch (SQLException e) {
@@ -98,14 +97,14 @@ public class PopulationReport {
     }
 
     /**
-     * Gets and displays the total population of the district
-     * from the World database.
+     * Gets and displays the total population of the district from the World database.
+     * @param district is the name of the district
      */
-    public void getDistrictPopulation() {
+    public void getDistrictPopulation(String district) {
         try {
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(
-                    "SELECT District, SUM(Population) as sumPopulation FROM city GROUP BY District ORDER BY District ASC;"
+                    "SELECT District, SUM(Population) as sumPopulation FROM city WHERE District = '" + district + "' GROUP BY District ORDER BY District ASC;"
             );
             System.out.println("District name | Total population");
             while (rs.next()) {
@@ -120,14 +119,14 @@ public class PopulationReport {
     }
 
     /**
-     * Gets and displays population that live in and out of cities by country
-     * from the World database.
+     * Gets and displays population that live in and out of cities by country from the World database.
+     * @param country is the name of the country
      */
-    public void getInOutPopulationByCountry() {
+    public void getInOutPopulationByCountry(String country) {
         try {
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(
-                    "SELECT country.Name AS 'Country', sum(country.Population - city.CityPopulation) AS 'PopulationOutOfCities', sum(city.CityPopulation) AS 'PopulationInCities', sum(country.Population) AS 'TotalPopulationOfTheCountry' FROM country JOIN ( SELECT CountryCode, SUM(Population) AS CityPopulation FROM city GROUP BY CountryCode) city ON country.Code = city.CountryCode GROUP BY country.Name ORDER BY country.Name ASC;"
+                    "SELECT country.Name AS 'Country', sum(country.Population - city.CityPopulation) AS 'PopulationOutOfCities', sum(city.CityPopulation) AS 'PopulationInCities', sum(country.Population) AS 'TotalPopulationOfTheCountry' FROM country JOIN ( SELECT CountryCode, SUM(Population) AS CityPopulation FROM city GROUP BY CountryCode) city ON country.Code = city.CountryCode WHERE country.Name = '" + country + "' GROUP BY country.Name ORDER BY country.Name ASC;"
             );
 
             System.out.println("Country Name | Population out of cities | Population in cities | Total population of the country");
@@ -145,14 +144,14 @@ public class PopulationReport {
     }
 
     /**
-     * Gets and displays population that live in and out of cities by region
-     * from the World database.
+     * Gets and displays population that live in and out of cities by region from the World database.
+     * @param region is the name of the region
      */
-    public void getInOutPopulationByRegion() {
+    public void getInOutPopulationByRegion(String region) {
         try {
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(
-                    "SELECT country.region AS 'Region', sum(country.Population - city.CityPopulation) AS 'PopulationOutOfCities', sum(city.CityPopulation) AS 'PopulationInCities', sum(country.Population) AS 'TotalPopulationOfTheRegion' FROM country JOIN ( SELECT CountryCode, SUM(Population) AS CityPopulation FROM city GROUP BY CountryCode) city ON country.Code = city.CountryCode GROUP BY country.region ORDER BY country.Region ASC;"
+                    "SELECT country.region AS 'Region', sum(country.Population - city.CityPopulation) AS 'PopulationOutOfCities', sum(city.CityPopulation) AS 'PopulationInCities', sum(country.Population) AS 'TotalPopulationOfTheRegion' FROM country JOIN ( SELECT CountryCode, SUM(Population) AS CityPopulation FROM city GROUP BY CountryCode) city ON country.Code = city.CountryCode WHERE country.Region ='" + region + "' GROUP BY country.Region ORDER BY country.Region ASC;"
             );
 
             System.out.println("Region | Population out of cities | Population in cities | Total population in the region");
