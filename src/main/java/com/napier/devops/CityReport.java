@@ -23,7 +23,7 @@ public class CityReport {
 
     // getTopCapitalsByContinent()
 
-    // getTopCapitalsByRegion()
+
 
     // getCitiesInCountryByPopulation()
 
@@ -74,6 +74,27 @@ public class CityReport {
             System.out.println(e);
         }
 
+    }
 
+    /**
+     * Returns all Capital cities and their population within a given region
+     * @param Name names the region to conduct the search within
+     */
+    public void getCapitalsInRegionByPopulation(String Name){
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(
+                    "SELECT city.Name as 'City Name', country.Name as 'Country Name', city.Population as 'City Population'  FROM city JOIN country on city.ID = country.Capital  WHERE country.Region ='" + Name + "' ORDER BY city.Population DESC");
+
+            while (rs.next()) {
+                System.out.println(
+                        rs.getString("City Name") + " - " +
+                                rs.getString("Country Name") + " - " +
+                                rs.getInt("City Population")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
     }
 }
