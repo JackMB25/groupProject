@@ -29,7 +29,7 @@ public class CityReport {
 
 
     /**
-     *
+     * Takes the parameter 'Country' and returns all cities in that country by population
      * @param Country the name of the country, e.g. "Italy"
      */
 
