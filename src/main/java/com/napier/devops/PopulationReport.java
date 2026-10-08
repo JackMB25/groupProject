@@ -178,9 +178,10 @@ public class PopulationReport {
             while (rs.next()) {
                 System.out.println(
                         rs.getString("Country Name") + " - " +
-                                rs.getString("City Name")  + " - " +
+                                rs.getString("City Name") + " - " +
                                 rs.getInt("city.Population")
                 );
+            }
         } catch (SQLException e) {
             System.out.println(e);
         }
