@@ -168,7 +168,6 @@ public class PopulationReport {
                                 rs.getString("City Name")  + " - " +
                                 rs.getInt("city.Population")
                 );
-            }
         } catch (SQLException e) {
             System.out.println(e);
         }
