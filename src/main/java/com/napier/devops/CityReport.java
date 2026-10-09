@@ -1,6 +1,7 @@
 package com.napier.devops;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -196,6 +197,99 @@ public class CityReport {
                         rs.getString("cName"),
                         rs.getString("countryName"),
                         rs.getInt("cPop")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
+
+    /**
+     * Gets and displays the top N populated cities in a continent.
+     * @param continent is the name of the continent
+     * @param n is the number of cities to show
+     */
+    public void getTopCitiesByContinent(String continent, int n) {
+        try {
+            PreparedStatement stmt = con.prepareStatement(
+                    "SELECT city.Name AS 'City', country.Name AS 'Country', city.District, city.Population "
+                            + "FROM city JOIN country ON city.CountryCode = country.Code "
+                            + "WHERE country.Continent = ? "
+                            + "ORDER BY city.Population DESC LIMIT ?;"
+            );
+            stmt.setString(1, continent);
+            stmt.setInt(2, n);
+            ResultSet rs = stmt.executeQuery();
+            System.out.println("Top " + n + " cities in " + continent);
+            System.out.println("City | Country | District | Population");
+            while (rs.next()) {
+                System.out.println(
+                        rs.getString("City") + " | " +
+                                rs.getString("Country") + " | " +
+                                rs.getString("District") + " | " +
+                                rs.getInt("Population")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
+
+    /**
+     * Gets and displays the top N populated cities in a region.
+     * @param region is the name of the region
+     * @param n is the number of cities to show
+     */
+    public void getTopCitiesByRegion(String region, int n) {
+        try {
+            PreparedStatement stmt = con.prepareStatement(
+                    "SELECT city.Name AS 'City', country.Name AS 'Country', city.District, city.Population "
+                            + "FROM city JOIN country ON city.CountryCode = country.Code "
+                            + "WHERE country.Region = ? "
+                            + "ORDER BY city.Population DESC LIMIT ?;"
+            );
+            stmt.setString(1, region);
+            stmt.setInt(2, n);
+            ResultSet rs = stmt.executeQuery();
+            System.out.println("Top " + n + " cities in " + region);
+            System.out.println("City | Country | District | Population");
+            while (rs.next()) {
+                System.out.println(
+                        rs.getString("City") + " | " +
+                                rs.getString("Country") + " | " +
+                                rs.getString("District") + " | " +
+                                rs.getInt("Population")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
+
+    /**
+     * Gets and displays the top N populated cities in a district.
+     * @param district is the name of the district
+     * @param n is the number of cities to show
+     */
+    public void getTopCitiesByDistrict(String district, int n) {
+        try {
+            PreparedStatement stmt = con.prepareStatement(
+                    "SELECT city.Name AS 'City', country.Name AS 'Country', city.District, city.Population "
+                            + "FROM city JOIN country ON city.CountryCode = country.Code "
+                            + "WHERE city.District = ? "
+                            + "ORDER BY city.Population DESC LIMIT ?;"
+            );
+            stmt.setString(1, district);
+            stmt.setInt(2, n);
+            ResultSet rs = stmt.executeQuery();
+            System.out.println("Top " + n + " cities in " + district);
+            System.out.println("City | Country | District | Population");
+            while (rs.next()) {
+                System.out.println(
+                        rs.getString("City") + " | " +
+                                rs.getString("Country") + " | " +
+                                rs.getString("District") + " | " +
+                                rs.getInt("Population")
                 );
             }
         } catch (SQLException e) {

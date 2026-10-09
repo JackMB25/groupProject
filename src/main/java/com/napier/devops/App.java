@@ -76,6 +76,24 @@ public class App
         // Getting top N populated capital cities in the world
         pr.getTopCapitalsWorld(5);
 
+        // Getting top N populated cities in a continent
+        cir.getTopCitiesByContinent("Europe", 5);
+
+        // Getting top N populated cities in a region
+        cir.getTopCitiesByRegion("British Islands", 5);
+
+        // Getting top N populated cities in a district
+        cir.getTopCitiesByDistrict("Scotland", 3);
+
+        // Getting top N populated capital cities in a continent
+        pr.getTopCapitalsByContinent("Europe", 5);
+
+        // Getting top N populated capital cities in a region
+        pr.getTopCapitalsByRegion("Caribbean", 5);
+
+        // Getting top N populated countries in a region
+        ctryr.getTopCountriesByRegion("Western Europe", 5);
+
         // Database operations will go here later
 
         app.disconnect();
