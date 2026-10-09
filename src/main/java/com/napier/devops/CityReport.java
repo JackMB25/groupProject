@@ -118,7 +118,7 @@ public class CityReport {
 
 
     /**
-     *
+     * Takes the parameter 'Country' and returns all cities in that country by population
      * @param Country the name of the country, e.g. "Italy"
      */
 
@@ -126,7 +126,7 @@ public class CityReport {
         try {
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(
-                    "Select city.Name as 'City Name', country.Name as 'Country Name', city.Population From city JOIN country ON city.CountryCode = Country.Code WHERE country.Name =" + Country + "  ORDER BY city.Population DESC;");
+                    "Select city.Name as 'City Name', country.Name as 'Country Name', city.Population From city JOIN country ON city.CountryCode = Country.Code WHERE country.Name ='" + Country + "'  ORDER BY city.Population DESC;");
 
             while (rs.next()) {
                 System.out.println(
