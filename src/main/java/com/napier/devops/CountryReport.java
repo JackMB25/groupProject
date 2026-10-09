@@ -98,6 +98,9 @@ public class CountryReport {
      */
     public void getTopCountriesByRegion(String region, int n) {
         try {
+            // left join city on the capital ID to get the capital's name
+            // left join so a country with no capital still shows up
+            // biggest first, LIMIT ? = top n
             PreparedStatement stmt = con.prepareStatement(
                     "SELECT country.Code, country.Name, country.Continent, country.Region, country.Population, city.Name AS 'Capital' "
                             + "FROM country LEFT JOIN city ON country.Capital = city.ID "

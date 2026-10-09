@@ -211,6 +211,8 @@ public class CityReport {
      */
     public void getTopCitiesByContinent(String continent, int n) {
         try {
+            // join city to country so i can get the country name + filter by continent
+            // sort biggest first, LIMIT ? = top n. 1st ? = continent, 2nd ? = n
             PreparedStatement stmt = con.prepareStatement(
                     "SELECT city.Name AS 'City', country.Name AS 'Country', city.District, city.Population "
                             + "FROM city JOIN country ON city.CountryCode = country.Code "
@@ -242,6 +244,7 @@ public class CityReport {
      */
     public void getTopCitiesByRegion(String region, int n) {
         try {
+            // same as continent one, just WHERE on region instead
             PreparedStatement stmt = con.prepareStatement(
                     "SELECT city.Name AS 'City', country.Name AS 'Country', city.District, city.Population "
                             + "FROM city JOIN country ON city.CountryCode = country.Code "
@@ -273,6 +276,7 @@ public class CityReport {
      */
     public void getTopCitiesByDistrict(String district, int n) {
         try {
+            // district is on the city table itself but still join country for the country name
             PreparedStatement stmt = con.prepareStatement(
                     "SELECT city.Name AS 'City', country.Name AS 'Country', city.District, city.Population "
                             + "FROM city JOIN country ON city.CountryCode = country.Code "
