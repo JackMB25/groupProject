@@ -53,8 +53,13 @@ public class App
 
         // Getting Population in and out of cities by region
 
+        /**
+         * N Reports KSalawa
+         */
         //Getting N populated Cities in Country
-//        cir.getTopCitiesInCountry("Italy", 5);
+        cir.getTopCitiesInCountry("Poland", 5);
+        //Getting N populated Cities in World
+        cir.getTopNCitiesWorld(10);
 
 
         pr.getInOutPopulationByRegion("Caribbean"); // Replace "..." with input reader
