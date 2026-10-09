@@ -67,6 +67,15 @@ public class App
         lr.getLanguageSpeakers();
         pr.getAllCapitalsByPopulation();
 
+        // Getting Population of a city
+        pr.getCityPopulation("Edinburgh");
+
+        // Getting Population in and out of cities by continent
+        pr.getInOutPopulationByContinent("Europe");
+
+        // Getting top N populated capital cities in the world
+        pr.getTopCapitalsWorld(5);
+
         // Database operations will go here later
 
         app.disconnect();
