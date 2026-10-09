@@ -213,25 +213,37 @@ public class PopulationReport {
             System.out.println(e);
         }
     }
-
+    
     /**
-     * Gets and displays population that live in and out of cities by continent from the World database.
+     * Gets and displays population that live in and out of cities by continent from the World database,
+     * including the percentage of people living in and out of cities.
      * @param continent is the name of the continent
      */
     public void getInOutPopulationByContinent(String continent) {
         try {
             PreparedStatement stmt = con.prepareStatement(
-                    "SELECT country.Continent AS 'Continent', sum(country.Population - city.CityPopulation) AS 'PopulationOutOfCities', sum(city.CityPopulation) AS 'PopulationInCities', sum(country.Population) AS 'TotalPopulationOfTheContinent' FROM country JOIN ( SELECT CountryCode, SUM(Population) AS CityPopulation FROM city GROUP BY CountryCode) city ON country.Code = city.CountryCode WHERE country.Continent = ? GROUP BY country.Continent ORDER BY country.Continent ASC;"
+                    "SELECT country.Continent AS 'Continent', "
+                            + "sum(country.Population) AS 'TotalPopulationOfTheContinent', "
+                            + "sum(city.CityPopulation) AS 'PopulationInCities', "
+                            + "ROUND(sum(city.CityPopulation) / sum(country.Population) * 100, 2) AS 'PercentInCities', "
+                            + "sum(country.Population - city.CityPopulation) AS 'PopulationOutOfCities', "
+                            + "ROUND(sum(country.Population - city.CityPopulation) / sum(country.Population) * 100, 2) AS 'PercentOutOfCities' "
+                            + "FROM country JOIN ( SELECT CountryCode, SUM(Population) AS CityPopulation FROM city GROUP BY CountryCode) city "
+                            + "ON country.Code = city.CountryCode "
+                            + "WHERE country.Continent = ? "
+                            + "GROUP BY country.Continent ORDER BY country.Continent ASC;"
             );
             stmt.setString(1, continent);
             ResultSet rs = stmt.executeQuery();
-            System.out.println("Continent | Population out of cities | Population in cities | Total population in the continent");
+            System.out.println("Continent | Total population | In cities | % in cities | Out of cities | % out of cities");
             while (rs.next()) {
                 System.out.println(
                         rs.getString("Continent") + " | " +
-                                rs.getLong("PopulationOutOfCities") + " | " +
+                                rs.getLong("TotalPopulationOfTheContinent") + " | " +
                                 rs.getLong("PopulationInCities") + " | " +
-                                rs.getLong("TotalPopulationOfTheContinent")
+                                rs.getDouble("PercentInCities") + "% | " +
+                                rs.getLong("PopulationOutOfCities") + " | " +
+                                rs.getDouble("PercentOutOfCities") + "%"
                 );
             }
         } catch (SQLException e) {
