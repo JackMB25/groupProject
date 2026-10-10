@@ -190,4 +190,88 @@ public class PopulationReport {
             System.out.println(e);
         }
     }
+
+    /**
+     * Gets and displays the population of a city from the World database.
+     * @param city is the name of the city
+     */
+    public void getCityPopulation(String city) {
+        try {
+            PreparedStatement stmt = con.prepareStatement(
+                    "SELECT Name, Population FROM city WHERE Name = ?;"
+            );
+            stmt.setString(1, city);
+            ResultSet rs = stmt.executeQuery();
+            System.out.println("City name | Population");
+            while (rs.next()) {
+                System.out.println(
+                        rs.getString("Name") + " | " +
+                                rs.getInt("Population")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
+    
+    /**
+     * Gets and displays population that live in and out of cities by continent from the World database,
+     * including the percentage of people living in and out of cities.
+     * @param continent is the name of the continent
+     */
+    public void getInOutPopulationByContinent(String continent) {
+        try {
+            PreparedStatement stmt = con.prepareStatement(
+                    "SELECT country.Continent AS 'Continent', "
+                            + "sum(country.Population) AS 'TotalPopulationOfTheContinent', "
+                            + "sum(city.CityPopulation) AS 'PopulationInCities', "
+                            + "ROUND(sum(city.CityPopulation) / sum(country.Population) * 100, 2) AS 'PercentInCities', "
+                            + "sum(country.Population - city.CityPopulation) AS 'PopulationOutOfCities', "
+                            + "ROUND(sum(country.Population - city.CityPopulation) / sum(country.Population) * 100, 2) AS 'PercentOutOfCities' "
+                            + "FROM country JOIN ( SELECT CountryCode, SUM(Population) AS CityPopulation FROM city GROUP BY CountryCode) city "
+                            + "ON country.Code = city.CountryCode "
+                            + "WHERE country.Continent = ? "
+                            + "GROUP BY country.Continent ORDER BY country.Continent ASC;"
+            );
+            stmt.setString(1, continent);
+            ResultSet rs = stmt.executeQuery();
+            System.out.println("Continent | Total population | In cities | % in cities | Out of cities | % out of cities");
+            while (rs.next()) {
+                System.out.println(
+                        rs.getString("Continent") + " | " +
+                                rs.getLong("TotalPopulationOfTheContinent") + " | " +
+                                rs.getLong("PopulationInCities") + " | " +
+                                rs.getDouble("PercentInCities") + "% | " +
+                                rs.getLong("PopulationOutOfCities") + " | " +
+                                rs.getDouble("PercentOutOfCities") + "%"
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
+
+    /**
+     * Gets and displays the top N populated capital cities in the world.
+     * @param n is the number of capital cities to show
+     */
+    public void getTopCapitalsWorld(int n) {
+        try {
+            PreparedStatement stmt = con.prepareStatement(
+                    "SELECT country.Name AS 'Country Name', city.Name AS 'City Name', city.Population FROM city JOIN country ON city.ID = country.Capital ORDER BY city.Population DESC LIMIT ?;"
+            );
+            stmt.setInt(1, n);
+            ResultSet rs = stmt.executeQuery();
+            System.out.println("Capital | Country | Population");
+            while (rs.next()) {
+                System.out.println(
+                        rs.getString("City Name") + " | " +
+                                rs.getString("Country Name") + " | " +
+                                rs.getInt("Population")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
 }

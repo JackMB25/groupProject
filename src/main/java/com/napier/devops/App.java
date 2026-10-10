@@ -53,14 +53,28 @@ public class App
 
         // Getting Population in and out of cities by region
 
+        /**
+         * N Reports KSalawa
+         */
         //Getting N populated Cities in Country
-//        cir.getTopCitiesInCountry("Italy", 5);
+        cir.getTopCitiesInCountry("Poland", 5);
+        //Getting N populated Cities in World
+        cir.getTopNCitiesWorld(10);
 
 
         pr.getInOutPopulationByRegion("Caribbean"); // Replace "..." with input reader
         // test language report function
         lr.getLanguageSpeakers();
         pr.getAllCapitalsByPopulation();
+
+        // Getting Population of a city
+        pr.getCityPopulation("Edinburgh");
+
+        // Getting Population in and out of cities by continent
+        pr.getInOutPopulationByContinent("Europe");
+
+        // Getting top N populated capital cities in the world
+        pr.getTopCapitalsWorld(5);
 
         // Database operations will go here later
 

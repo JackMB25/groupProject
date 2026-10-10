@@ -35,6 +35,42 @@ public class CityReport {
             System.out.println(e);
         }
     }
+    /** KSalawa
+     * Gets the top N most populated cities in the world.
+     *
+     * @param n the number of cities to display
+     */
+    public void getTopNCitiesWorld(int n) {
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(
+                    "SELECT c.Name AS cName, c.Population AS cPop " +
+                            "FROM city AS c " +
+                            "ORDER BY cPop DESC " +
+                            "LIMIT " + n + ";"
+            );
+
+            System.out.println("========================================");
+            System.out.println("Top " + n + " Cities in the World by Population");
+            System.out.println("========================================");
+            System.out.printf("%-25s %15s%n", "City", "Population");
+            System.out.println("----------------------------------------");
+
+            while (rs.next()) {
+                System.out.printf(
+                        "%-25s %,15d%n",
+                        rs.getString("cName"),
+                        rs.getInt("cPop")
+                );
+            }
+
+            rs.close();
+            stmt.close();
+
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
 
     /**
      * Gets the population of all cities in the continent chosen by the user
