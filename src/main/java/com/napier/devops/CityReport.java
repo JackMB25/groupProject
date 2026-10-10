@@ -150,25 +150,21 @@ public class CityReport {
 
     // getTopCapitalsByRegion()
 
-    // getCitiesInCountryByPopulation()
-
-
     /**
      * Takes the parameter 'Country' and returns all cities in that country by population
      * @param Country the name of the country, e.g. "Italy"
      */
-
     public void getCitiesInCountryByPopulation(String Country) {
         try {
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(
-                    "Select city.Name as 'City Name', country.Name as 'Country Name', city.Population From city JOIN country ON city.CountryCode = Country.Code WHERE country.Name ='" + Country + "'  ORDER BY city.Population DESC;");
+                    "Select city.Name as 'City Name', country.Name as 'Country Name', city.Population as 'Population' From city JOIN country ON city.CountryCode = country.Code WHERE country.Name ='" + Country + "'  ORDER BY city.Population DESC");
 
             while (rs.next()) {
                 System.out.println(
                         rs.getString("City Name") + " - " +
                                 rs.getString("Country Name") + " - " +
-                                rs.getInt("cities.Population")
+                                rs.getInt("Population")
                 );
             }
         } catch (SQLException e) {
@@ -176,6 +172,49 @@ public class CityReport {
         }
     }
 
+    /**
+     * returns all capital cities and their population from a continent
+     * @param Name this is the name of the continent from which to find the Capital cities
+     */
+    public void getCapitalsInContinentByPopulation(String Name) {
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(
+                    "SELECT city.Name as 'City Name', country.Name as 'Country Name', city.Population as 'City Population' FROM city JOIN country on city.ID = country.Capital WHERE country.Continent = '" + Name + "' ORDER BY city.Population DESC");
+
+            while (rs.next()) {
+                System.out.println(
+                        rs.getString("City Name") + " - " +
+                                rs.getString("Country Name") + " - " +
+                                rs.getInt("City Population")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
+
+    /**
+     * Returns all Capital cities and their population within a given region
+     * @param Name names the region to conduct the search within
+     */
+    public void getCapitalsInRegionByPopulation(String Name){
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(
+                    "SELECT city.Name as 'City Name', country.Name as 'Country Name', city.Population as 'City Population'  FROM city JOIN country on city.ID = country.Capital  WHERE country.Region ='" + Name + "' ORDER BY city.Population DESC");
+
+            while (rs.next()) {
+                System.out.println(
+                        rs.getString("City Name") + " - " +
+                                rs.getString("Country Name") + " - " +
+                                rs.getInt("City Population")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
 
     // Top N cities in a country #20
     public void getTopCitiesInCountry(String country, int n){
