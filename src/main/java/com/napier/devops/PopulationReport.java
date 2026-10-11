@@ -197,6 +197,8 @@ public class PopulationReport {
      */
     public void getCityPopulation(String city) {
         try {
+            // simple one, city pop is just stored on its own row so no join needed
+            // ? gets filled with the city name below, stops sql injection
             PreparedStatement stmt = con.prepareStatement(
                     "SELECT Name, Population FROM city WHERE Name = ?;"
             );
@@ -221,6 +223,9 @@ public class PopulationReport {
      */
     public void getInOutPopulationByContinent(String continent) {
         try {
+            // subquery adds up all the city pops per country first,
+            // then join that to country so i have total vs in cities side by side
+            // out of cities = total - in cities, % = part / total * 100 rounded to 2dp
             PreparedStatement stmt = con.prepareStatement(
                     "SELECT country.Continent AS 'Continent', "
                             + "sum(country.Population) AS 'TotalPopulationOfTheContinent', "
@@ -257,11 +262,76 @@ public class PopulationReport {
      */
     public void getTopCapitalsWorld(int n) {
         try {
+            // country.Capital holds the city ID of its capital so joining on that = only capitals
+            // biggest first then LIMIT ? cuts it to the top n
             PreparedStatement stmt = con.prepareStatement(
                     "SELECT country.Name AS 'Country Name', city.Name AS 'City Name', city.Population FROM city JOIN country ON city.ID = country.Capital ORDER BY city.Population DESC LIMIT ?;"
             );
             stmt.setInt(1, n);
             ResultSet rs = stmt.executeQuery();
+            System.out.println("Capital | Country | Population");
+            while (rs.next()) {
+                System.out.println(
+                        rs.getString("City Name") + " | " +
+                                rs.getString("Country Name") + " | " +
+                                rs.getInt("Population")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
+
+    /**
+     * Gets and displays the top N populated capital cities in a continent.
+     * @param continent is the name of the continent
+     * @param n is the number of capital cities to show
+     */
+    public void getTopCapitalsByContinent(String continent, int n) {
+        try {
+            // same as top capitals in the world, just filtered to one continent
+            // 1st ? = continent, 2nd ? = n
+            PreparedStatement stmt = con.prepareStatement(
+                    "SELECT city.Name AS 'City Name', country.Name AS 'Country Name', city.Population "
+                            + "FROM city JOIN country ON city.ID = country.Capital "
+                            + "WHERE country.Continent = ? "
+                            + "ORDER BY city.Population DESC LIMIT ?;"
+            );
+            stmt.setString(1, continent);
+            stmt.setInt(2, n);
+            ResultSet rs = stmt.executeQuery();
+            System.out.println("Top " + n + " capital cities in " + continent);
+            System.out.println("Capital | Country | Population");
+            while (rs.next()) {
+                System.out.println(
+                        rs.getString("City Name") + " | " +
+                                rs.getString("Country Name") + " | " +
+                                rs.getInt("Population")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
+
+    /**
+     * Gets and displays the top N populated capital cities in a region.
+     * @param region is the name of the region
+     * @param n is the number of capital cities to show
+     */
+    public void getTopCapitalsByRegion(String region, int n) {
+        try {
+            // same again but by region instead of continent
+            PreparedStatement stmt = con.prepareStatement(
+                    "SELECT city.Name AS 'City Name', country.Name AS 'Country Name', city.Population "
+                            + "FROM city JOIN country ON city.ID = country.Capital "
+                            + "WHERE country.Region = ? "
+                            + "ORDER BY city.Population DESC LIMIT ?;"
+            );
+            stmt.setString(1, region);
+            stmt.setInt(2, n);
+            ResultSet rs = stmt.executeQuery();
+            System.out.println("Top " + n + " capital cities in " + region);
             System.out.println("Capital | Country | Population");
             while (rs.next()) {
                 System.out.println(
