@@ -1,36 +1,167 @@
 package com.napier.devops;
 
-import com.mongodb.MongoClient;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.MongoCollection;
-import org.bson.Document;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class App
 {
     /**
-     * javaDOC
-     * @param args Main entry point for the app
-     *             Connects to the MongoDB database create a test document,
-     *             stores it in collection, retrives and prints the document
+     * Connection to MySQL database.
      */
+    private static Connection con = null;
+
     public static void main(String[] args)
     {
-// Connect to MongoDB
-        MongoClient mongoClient = new MongoClient("mongo-dbserver");
-        // Get a database - will create when we use it
-        MongoDatabase database = mongoClient.getDatabase("mydb");
-        // Get a collection from the database
-        MongoCollection<Document> collection = database.getCollection("test");
-        // Create a document to store
-        Document doc = new Document("name", "Kevin Sim")
-                .append("class", "DevOps")
-                .append("year", "2024")
-                .append("result", new Document("CW", 95).append("EX", 85));
-        // Add document to collection
-        collection.insertOne(doc);
+        App app = new App();
 
-        // Check document in collection
-        Document myDoc = collection.find().first();
-        System.out.println(myDoc.toJson());
+        app.connect();
+
+        // create objects for each type of reports
+        LanguageReport lr = new LanguageReport(con);
+
+        CityReport cir = new CityReport(con);
+
+        CountryReport ctryr = new CountryReport(con);
+
+        PopulationReport pr = new PopulationReport(con);
+
+
+        // Getting Population of the world
+
+        pr.getWorldPopulation();
+
+        // Getting Population of a continent
+
+        pr.getContinentPopulation("North America"); // Replace "..." with input reader
+
+        // Getting Population of a region
+
+        pr.getRegionPopulation("Caribbean");    // Replace "..." with input reader
+
+        // Getting Population of a country
+
+        pr.getCountryPopulation("Cuba");    // Replace "..." with input reader
+
+        // Getting Population of a district
+
+        pr.getDistrictPopulation("Herat");  // Replace "..." with input reader
+
+        // Getting Population in and out of cities by country
+
+        pr.getInOutPopulationByCountry("Cuba"); // Replace "..." with input reader
+
+        // Getting Population in and out of cities by region
+
+        /**
+         * N Reports KSalawa
+         */
+        //Getting N populated Cities in Country
+        cir.getTopCitiesInCountry("Poland", 5);
+        //Getting N populated Cities in World
+        cir.getTopNCitiesWorld(10);
+
+
+        pr.getInOutPopulationByRegion("Caribbean"); // Replace "..." with input reader
+        // test language report function
+        lr.getLanguageSpeakers();
+        pr.getAllCapitalsByPopulation();
+
+        // Getting Population of a city
+        pr.getCityPopulation("Edinburgh");
+
+        // Getting Population in and out of cities by continent
+        pr.getInOutPopulationByContinent("Europe");
+
+        // Getting top N populated capital cities in the world
+        pr.getTopCapitalsWorld(5);
+
+        // Getting top N populated cities in a continent
+        cir.getTopCitiesByContinent("Europe", 5);
+
+        // Getting top N populated cities in a region
+        cir.getTopCitiesByRegion("British Islands", 5);
+
+        // Getting top N populated cities in a district
+        cir.getTopCitiesByDistrict("Scotland", 3);
+
+        // Getting top N populated capital cities in a continent
+        pr.getTopCapitalsByContinent("Europe", 5);
+
+        // Getting top N populated capital cities in a region
+        pr.getTopCapitalsByRegion("Caribbean", 5);
+
+        // Getting top N populated countries in a region
+        ctryr.getTopCountriesByRegion("Western Europe", 5);
+
+        // Database operations will go here later
+
+        app.disconnect();
+    }
+
+    /**
+     * Connect to the MySQL database.
+     */
+    public void connect()
+    {
+        try
+        {
+            // Load Database driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        }
+        catch (ClassNotFoundException e)
+        {
+            System.out.println("Could not load SQL driver");
+            System.exit(-1);
+        }
+
+        int retries = 10;
+        for (int i = 0; i < retries; ++i)
+        {
+            System.out.println("Connecting to database...");
+            try
+            {
+                // Wait a bit for db to start
+                Thread.sleep(30000);
+
+                // Connect to database
+                con = DriverManager.getConnection(
+                        "jdbc:mysql://db:3306/world?allowPublicKeyRetrieval=true&useSSL=false",
+                        "root",
+                        "example"
+                );
+
+                System.out.println("Successfully connected");
+                break;
+            }
+            catch (SQLException sqle)
+            {
+                System.out.println("Failed to connect to database attempt " + Integer.toString(i));
+                System.out.println(sqle.getMessage());
+            }
+            catch (InterruptedException ie)
+            {
+                System.out.println("Thread interrupted? Should not happen.");
+            }
+        }
+    }
+
+    /**
+     * Disconnect from the MySQL database.
+     */
+    public void disconnect()
+    {
+        if (con != null)
+        {
+            try
+            {
+                // Close connection
+                con.close();
+            }
+            catch (Exception e)
+            {
+                System.out.println("Error closing connection to database");
+            }
+        }
     }
 }
