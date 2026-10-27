@@ -234,7 +234,7 @@ public class CityReport {
         try {
             ResultSet rs = executeStatement("SELECT city.Name AS 'City', country.Name AS 'Country', city.District, city.Population "
                     + "FROM city JOIN country ON city.CountryCode = country.Code "
-                    + "WHERE country.Continent = " + continent
+                    + "WHERE country.Continent = '" + continent + "'"
                     + "ORDER BY city.Population DESC LIMIT " + n + ";");
             System.out.println("Top " + n + " cities in " + continent);
             System.out.println("City | Country | District | Population");
@@ -260,7 +260,7 @@ public class CityReport {
         try {
             ResultSet rs = executeStatement("SELECT city.Name AS 'City', country.Name AS 'Country', city.District, city.Population "
                     + "FROM city JOIN country ON city.CountryCode = country.Code "
-                    + "WHERE country.Region = " + region
+                    + "WHERE country.Region = '" + region + "'"
                     + "ORDER BY city.Population DESC LIMIT "+ n +";");
             System.out.println("Top " + n + " cities in " + region);
             System.out.println("City | Country | District | Population");
@@ -286,7 +286,7 @@ public class CityReport {
         try {
             ResultSet rs = executeStatement("SELECT city.Name AS 'City', country.Name AS 'Country', city.District, city.Population "
                     + "FROM city JOIN country ON city.CountryCode = country.Code "
-                    + "WHERE city.District = " + district
+                    + "WHERE city.District = '" + district + "'"
                     + "ORDER BY city.Population DESC LIMIT " + n + ";");
             System.out.println("Top " + n + " cities in " + district);
             System.out.println("City | Country | District | Population");

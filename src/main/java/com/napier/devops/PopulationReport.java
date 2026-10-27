@@ -189,7 +189,9 @@ public class PopulationReport {
      */
     public void getCityPopulation(String city) {
         try {
-            ResultSet rs = executeStatement("SELECT Name, Population FROM city WHERE Name = " + city + ";");
+            ResultSet rs = executeStatement(
+                    "SELECT Name, Population FROM city WHERE Name = '" + city + "';"
+            );
             System.out.println("City name | Population");
             while (rs.next()) {
                 System.out.println(
@@ -217,7 +219,7 @@ public class PopulationReport {
                     + "ROUND(sum(country.Population - city.CityPopulation) / sum(country.Population) * 100, 2) AS 'PercentOutOfCities' "
                     + "FROM country JOIN ( SELECT CountryCode, SUM(Population) AS CityPopulation FROM city GROUP BY CountryCode) city "
                     + "ON country.Code = city.CountryCode "
-                    + "WHERE country.Continent = " + continent
+                    + "WHERE country.Continent = '" + continent + "'"
                     + "GROUP BY country.Continent ORDER BY country.Continent ASC;");
             System.out.println("Continent | Total population | In cities | % in cities | Out of cities | % out of cities");
             while (rs.next()) {
@@ -264,7 +266,7 @@ public class PopulationReport {
         try {
             ResultSet rs = executeStatement("SELECT city.Name AS 'City Name', country.Name AS 'Country Name', city.Population "
                     + "FROM city JOIN country ON city.ID = country.Capital "
-                    + "WHERE country.Continent = " + continent
+                    + "WHERE country.Continent = '" + continent + "'"
                     + "ORDER BY city.Population DESC LIMIT " + n + ";");
             System.out.println("Top " + n + " capital cities in " + continent);
             System.out.println("Capital | Country | Population");
@@ -290,7 +292,7 @@ public class PopulationReport {
 
             ResultSet rs = executeStatement("SELECT city.Name AS 'City Name', country.Name AS 'Country Name', city.Population "
                     + "FROM city JOIN country ON city.ID = country.Capital "
-                    + "WHERE country.Region = " + region
+                    + "WHERE country.Region = '" + region + "'"
                     + "ORDER BY city.Population DESC LIMIT " + n + ";");
             System.out.println("Top " + n + " capital cities in " + region);
             System.out.println("Capital | Country | Population");

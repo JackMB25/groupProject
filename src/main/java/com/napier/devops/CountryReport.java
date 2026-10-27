@@ -94,7 +94,7 @@ public class CountryReport {
         try {
             ResultSet rs = executeStatement("SELECT country.Code, country.Name, country.Continent, country.Region, country.Population, city.Name AS 'Capital' "
                     + "FROM country LEFT JOIN city ON country.Capital = city.ID "
-                    + "WHERE country.Region = " + region
+                    + "WHERE country.Region = '" + region + "'"
                     + "ORDER BY country.Population DESC LIMIT " + n + ";");
             System.out.println("Top " + n + " countries in " + region);
             System.out.println("Code | Name | Continent | Region | Population | Capital");
