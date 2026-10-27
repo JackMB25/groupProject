@@ -20,10 +20,7 @@ public class CityReport {
     // getAllCities()
     public void getAllCitiesWorld() {
         try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(
-                    "SELECT c.Name AS cName, c.Population AS cPop FROM city as c ORDER BY cPop DESC;"
-            );
+            ResultSet rs = executeStatement("SELECT c.Name AS cName, c.Population AS cPop FROM city as c ORDER BY cPop DESC;");
 
             System.out.println("Name | Population");
             while (rs.next()) {
@@ -43,8 +40,7 @@ public class CityReport {
      */
     public void getTopNCitiesWorld(int n) {
         try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(
+            ResultSet rs = executeStatement(
                     "SELECT c.Name AS cName, c.Population AS cPop " +
                             "FROM city AS c " +
                             "ORDER BY cPop DESC " +
@@ -65,9 +61,6 @@ public class CityReport {
                 );
             }
 
-            rs.close();
-            stmt.close();
-
         } catch (SQLException e) {
             System.out.println(e);
         }
@@ -80,8 +73,7 @@ public class CityReport {
     // getAllCitiesByContinent()
     public void getAllCitiesByContinent(String Continent) {
         try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(
+            ResultSet rs = executeStatement(
                     "SELECT c.Name AS cName, c.Population AS cPop FROM city as c, country AS ctry WHERE c.CountryCode = ctry.Code AND ctry.Continent ='" + Continent + "' ORDER BY cPop DESC;"
             );
 
@@ -104,8 +96,7 @@ public class CityReport {
     // getAllCitiesByRegion()
     public void getAllCitiesByRegion(String Region) {
         try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(
+            ResultSet rs = executeStatement(
                     "SELECT c.Name AS cName, c.Population AS cPop FROM city as c, country AS ctry WHERE c.CountryCode = ctry.Code AND ctry.Region ='" + Region + "' ORDER BY cPop DESC;"
             );
 
@@ -128,8 +119,7 @@ public class CityReport {
     // getAllCitiesByDistrict
     public void getAllCitiesByDistrict(String District) {
         try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(
+            ResultSet rs = executeStatement(
                     "SELECT c.Name AS cName, c.Population AS cPop FROM city as c WHERE ctry.District ='" + District + "' ORDER BY cPop DESC;"
             );
 
@@ -145,14 +135,6 @@ public class CityReport {
         }
     }
 
-    // getTopCapitalsWorld()
-
-    // getTopCapitalsByContinent()
-
-    // getTopCapitalsByRegion()
-
-    // getCitiesInCountryByPopulation()
-
 
     /**
      * Takes the parameter 'Country' and returns all cities in that country by population
@@ -161,8 +143,7 @@ public class CityReport {
 
     public void getCitiesInCountryByPopulation(String Country) {
         try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(
+            ResultSet rs = executeStatement(
                     "Select city.Name as 'City Name', country.Name as 'Country Name', city.Population as 'Population' From city JOIN country ON city.CountryCode = country.Code WHERE country.Name ='" + Country + "'  ORDER BY city.Population DESC");
 
             while (rs.next()) {
@@ -183,8 +164,7 @@ public class CityReport {
      */
     public void getCapitalsInContinentByPopulation(String Name) {
         try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(
+            ResultSet rs = executeStatement(
                     "SELECT city.Name as 'City Name', country.Name as 'Country Name', city.Population as 'City Population' FROM city JOIN country on city.ID = country.Capital WHERE country.Continent = '" + Name + "' ORDER BY city.Population DESC");
 
             while (rs.next()) {
@@ -205,8 +185,7 @@ public class CityReport {
      */
     public void getCapitalsInRegionByPopulation(String Name){
         try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(
+            ResultSet rs = executeStatement(
                     "SELECT city.Name as 'City Name', country.Name as 'Country Name', city.Population as 'City Population'  FROM city JOIN country on city.ID = country.Capital  WHERE country.Region ='" + Name + "' ORDER BY city.Population DESC");
 
             while (rs.next()) {
@@ -224,8 +203,7 @@ public class CityReport {
     // Top N cities in a country #20
     public void getTopCitiesInCountry(String country, int n){
         try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(
+            ResultSet rs = executeStatement(
                     "SELECT city.Name AS cName, country.Name AS countryName, city.Population AS cPop FROM city JOIN country ON city.CountryCode = country.Code WHERE country.Name = '" + country + "' ORDER BY city.Population DESC LIMIT " + n + ";"            );
 
             System.out.println("========================================");
@@ -254,17 +232,10 @@ public class CityReport {
      */
     public void getTopCitiesByContinent(String continent, int n) {
         try {
-            // join city to country so i can get the country name + filter by continent
-            // sort biggest first, LIMIT ? = top n. 1st ? = continent, 2nd ? = n
-            PreparedStatement stmt = con.prepareStatement(
-                    "SELECT city.Name AS 'City', country.Name AS 'Country', city.District, city.Population "
-                            + "FROM city JOIN country ON city.CountryCode = country.Code "
-                            + "WHERE country.Continent = ? "
-                            + "ORDER BY city.Population DESC LIMIT ?;"
-            );
-            stmt.setString(1, continent);
-            stmt.setInt(2, n);
-            ResultSet rs = stmt.executeQuery();
+            ResultSet rs = executeStatement("SELECT city.Name AS 'City', country.Name AS 'Country', city.District, city.Population "
+                    + "FROM city JOIN country ON city.CountryCode = country.Code "
+                    + "WHERE country.Continent = '" + continent + "'"
+                    + "ORDER BY city.Population DESC LIMIT " + n + ";");
             System.out.println("Top " + n + " cities in " + continent);
             System.out.println("City | Country | District | Population");
             while (rs.next()) {
@@ -287,16 +258,10 @@ public class CityReport {
      */
     public void getTopCitiesByRegion(String region, int n) {
         try {
-            // same as continent one, just WHERE on region instead
-            PreparedStatement stmt = con.prepareStatement(
-                    "SELECT city.Name AS 'City', country.Name AS 'Country', city.District, city.Population "
-                            + "FROM city JOIN country ON city.CountryCode = country.Code "
-                            + "WHERE country.Region = ? "
-                            + "ORDER BY city.Population DESC LIMIT ?;"
-            );
-            stmt.setString(1, region);
-            stmt.setInt(2, n);
-            ResultSet rs = stmt.executeQuery();
+            ResultSet rs = executeStatement("SELECT city.Name AS 'City', country.Name AS 'Country', city.District, city.Population "
+                    + "FROM city JOIN country ON city.CountryCode = country.Code "
+                    + "WHERE country.Region = '" + region + "'"
+                    + "ORDER BY city.Population DESC LIMIT "+ n +";");
             System.out.println("Top " + n + " cities in " + region);
             System.out.println("City | Country | District | Population");
             while (rs.next()) {
@@ -319,16 +284,10 @@ public class CityReport {
      */
     public void getTopCitiesByDistrict(String district, int n) {
         try {
-            // district is on the city table itself but still join country for the country name
-            PreparedStatement stmt = con.prepareStatement(
-                    "SELECT city.Name AS 'City', country.Name AS 'Country', city.District, city.Population "
-                            + "FROM city JOIN country ON city.CountryCode = country.Code "
-                            + "WHERE city.District = ? "
-                            + "ORDER BY city.Population DESC LIMIT ?;"
-            );
-            stmt.setString(1, district);
-            stmt.setInt(2, n);
-            ResultSet rs = stmt.executeQuery();
+            ResultSet rs = executeStatement("SELECT city.Name AS 'City', country.Name AS 'Country', city.District, city.Population "
+                    + "FROM city JOIN country ON city.CountryCode = country.Code "
+                    + "WHERE city.District = '" + district + "'"
+                    + "ORDER BY city.Population DESC LIMIT " + n + ";");
             System.out.println("Top " + n + " cities in " + district);
             System.out.println("City | Country | District | Population");
             while (rs.next()) {
@@ -341,6 +300,17 @@ public class CityReport {
             }
         } catch (SQLException e) {
             System.out.println(e);
+        }
+    }
+
+    public ResultSet executeStatement(String query) {
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            return rs;
+        } catch (SQLException e) {
+            System.out.println(e);
+            return null;
         }
     }
 }

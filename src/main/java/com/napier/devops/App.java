@@ -1,8 +1,6 @@
 package com.napier.devops;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class App
 {
@@ -53,9 +51,6 @@ public class App
 
         // Getting Population in and out of cities by region
 
-        /**
-         * N Reports KSalawa
-         */
         //Getting N populated Cities in Country
         cir.getTopCitiesInCountry("Poland", 5);
         //Getting N populated Cities in World
@@ -164,4 +159,6 @@ public class App
             }
         }
     }
+
+
 }
