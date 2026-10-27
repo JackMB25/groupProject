@@ -25,70 +25,73 @@ public class App
         PopulationReport pr = new PopulationReport(con);
 
 
-        // Getting Population of the world
+//        // Getting Population of the world
+//
+//        pr.getWorldPopulation();
+//
+//        // Getting Population of a continent
+//
+//        pr.getContinentPopulation("North America"); // Replace "..." with input reader
+//
+//        // Getting Population of a region
+//
+//        pr.getRegionPopulation("Caribbean");    // Replace "..." with input reader
+//
+//        // Getting Population of a country
+//
+//        pr.getCountryPopulation("Cuba");    // Replace "..." with input reader
+//
+//        // Getting Population of a district
+//
+//        pr.getDistrictPopulation("Herat");  // Replace "..." with input reader
+//
+//        // Getting Population in and out of cities by country
+//
+//        pr.getInOutPopulationByCountry("Cuba"); // Replace "..." with input reader
+//
+//        // Getting Population in and out of cities by region
+//
+//        //Getting N populated Cities in Country
+//        cir.getTopCitiesInCountry("Poland", 5);
+//        //Getting N populated Cities in World
+//        cir.getTopNCitiesWorld(10);
+//
+//
+//        pr.getInOutPopulationByRegion("Caribbean"); // Replace "..." with input reader
+//        // test language report function
+//        lr.getLanguageSpeakers();
+//        pr.getAllCapitalsByPopulation();
+//
+//        // Getting Population of a city
+//        pr.getCityPopulation("Edinburgh");
+//
+//        // Getting Population in and out of cities by continent
+//        pr.getInOutPopulationByContinent("Europe");
+//
+//        // Getting top N populated capital cities in the world
+//        pr.getTopCapitalsWorld(5);
+//
+//        // Getting top N populated cities in a continent
+//        cir.getTopCitiesByContinent("Europe", 5);
+//
+//        // Getting top N populated cities in a region
+//        cir.getTopCitiesByRegion("British Islands", 5);
+//
+//        // Getting top N populated cities in a district
+//        cir.getTopCitiesByDistrict("Scotland", 3);
+//
+//        // Getting top N populated capital cities in a continent
+//        pr.getTopCapitalsByContinent("Europe", 5);
+//
+//        // Getting top N populated capital cities in a region
+//        pr.getTopCapitalsByRegion("Caribbean", 5);
+//
+//        // Getting top N populated countries in a region
+//        ctryr.getTopCountriesByRegion("Western Europe", 5);
 
-        pr.getWorldPopulation();
 
-        // Getting Population of a continent
-
-        pr.getContinentPopulation("North America"); // Replace "..." with input reader
-
-        // Getting Population of a region
-
-        pr.getRegionPopulation("Caribbean");    // Replace "..." with input reader
-
-        // Getting Population of a country
-
-        pr.getCountryPopulation("Cuba");    // Replace "..." with input reader
-
-        // Getting Population of a district
-
-        pr.getDistrictPopulation("Herat");  // Replace "..." with input reader
-
-        // Getting Population in and out of cities by country
-
-        pr.getInOutPopulationByCountry("Cuba"); // Replace "..." with input reader
-
-        // Getting Population in and out of cities by region
-
-        //Getting N populated Cities in Country
-        cir.getTopCitiesInCountry("Poland", 5);
-        //Getting N populated Cities in World
-        cir.getTopNCitiesWorld(10);
-
-
-        pr.getInOutPopulationByRegion("Caribbean"); // Replace "..." with input reader
-        // test language report function
-        lr.getLanguageSpeakers();
-        pr.getAllCapitalsByPopulation();
-
-        // Getting Population of a city
-        pr.getCityPopulation("Edinburgh");
-
-        // Getting Population in and out of cities by continent
-        pr.getInOutPopulationByContinent("Europe");
-
-        // Getting top N populated capital cities in the world
-        pr.getTopCapitalsWorld(5);
-
-        // Getting top N populated cities in a continent
-        cir.getTopCitiesByContinent("Europe", 5);
-
-        // Getting top N populated cities in a region
-        cir.getTopCitiesByRegion("British Islands", 5);
-
-        // Getting top N populated cities in a district
-        cir.getTopCitiesByDistrict("Scotland", 3);
-
-        // Getting top N populated capital cities in a continent
-        pr.getTopCapitalsByContinent("Europe", 5);
-
-        // Getting top N populated capital cities in a region
-        pr.getTopCapitalsByRegion("Caribbean", 5);
-
-        // Getting top N populated countries in a region
-        ctryr.getTopCountriesByRegion("Western Europe", 5);
-
+        ResultSet languageSpeakers = lr.getLanguageSpeakers();
+        printReport(languageSpeakers);
         // Database operations will go here later
 
         app.disconnect();
@@ -159,6 +162,57 @@ public class App
             }
         }
     }
+
+
+    public static void printReport(ResultSet rs) {
+        if (rs == null) {
+            System.out.println("No results");
+            return;
+        }
+
+        try {
+            ResultSetMetaData metaData = rs.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
+            // Print column headings
+            for (int i = 1; i <= columnCount; i++) {
+                System.out.print(metaData.getColumnLabel(i));
+
+                if (i < columnCount) {
+                    System.out.print(" | ");
+                }
+            }
+            System.out.println();
+
+            // Print a separator
+            for (int i = 1; i <= columnCount; i++) {
+                System.out.print("------------");
+
+                if (i < columnCount) {
+                    System.out.print("+");
+                }
+            }
+            System.out.println();
+
+            // Print each row
+            while (rs.next()) {
+                for (int i = 1; i <= columnCount; i++) {
+                    Object value = rs.getObject(i);
+
+                    System.out.print(value == null ? "NULL" : value);
+
+                    if (i < columnCount) {
+                        System.out.print(" | ");
+                    }
+                }
+                System.out.println();
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error printing report: " + e.getMessage());
+        }
+    }
+
 
 
 }

@@ -17,25 +17,21 @@ public class LanguageReport {
      * Gets the population that speaks each language
      */
     // getLanguageSpeakers()
-    public void getLanguageSpeakers() {
+    public ResultSet getLanguageSpeakers() {
         try {
             ResultSet rs = executeStatement(
                     "SELECT cl.Language, sum(c.Population) as sumPop FROM countrylanguage as cl, country as c WHERE cl.CountryCode = c.Code GROUP BY cl.Language ORDER BY sum(c.Population) DESC;"
             );
 
-            System.out.println("Name | Population");
-            while (rs.next()) {
-                System.out.println(
-                        rs.getString("Language") + " - " +
-                                rs.getInt("sumPop")
-                );
-            }
+            return rs;
         } catch (SQLException e) {
             System.out.println(e);
+            return null;
         }
+
     }
 
-    public ResultSet executeStatement(String query) {
+    public ResultSet executeStatement(String query) throws SQLException {
         try {
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(query);
