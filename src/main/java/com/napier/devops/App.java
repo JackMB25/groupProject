@@ -1,8 +1,7 @@
 package com.napier.devops;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import javax.xml.transform.Result;
+import java.sql.*;
 
 public class App
 {
@@ -164,4 +163,6 @@ public class App
             }
         }
     }
+
+
 }

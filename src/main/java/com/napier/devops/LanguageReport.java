@@ -19,8 +19,7 @@ public class LanguageReport {
     // getLanguageSpeakers()
     public void getLanguageSpeakers() {
         try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(
+            ResultSet rs = executeStatement(
                     "SELECT cl.Language, sum(c.Population) as sumPop FROM countrylanguage as cl, country as c WHERE cl.CountryCode = c.Code GROUP BY cl.Language ORDER BY sum(c.Population) DESC;"
             );
 
@@ -33,6 +32,17 @@ public class LanguageReport {
             }
         } catch (SQLException e) {
             System.out.println(e);
+        }
+    }
+
+    public ResultSet executeStatement(String query) {
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            return rs;
+        } catch (SQLException e) {
+            System.out.println(e);
+            return null;
         }
     }
 

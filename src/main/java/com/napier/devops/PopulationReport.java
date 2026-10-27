@@ -15,8 +15,7 @@ public class PopulationReport {
      */
     public void getWorldPopulation() {
         try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(       // Sending SQL Query to the World database
+            ResultSet rs = executeStatement(       // Sending SQL Query to the World database
                     "SELECT SUM(Population) as 'sumPopulation' FROM country;"
             );
             System.out.println("Population of the world");      // Printing out heading
@@ -36,8 +35,7 @@ public class PopulationReport {
      */
     public void getContinentPopulation(String continent) {
         try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(
+            ResultSet rs = executeStatement(
                     "SELECT Name, Population FROM country WHERE Continent='" + continent + "' ORDER BY Name ASC;"
             );
             System.out.println("Name | Total population");
@@ -58,8 +56,7 @@ public class PopulationReport {
      */
     public void getRegionPopulation(String region) {
         try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(
+            ResultSet rs = executeStatement(
                     "SELECT Region, SUM(Population) as sumPopulation FROM country WHERE Region='" + region + "';"
             );
             System.out.println("Region name | Total population");
@@ -80,8 +77,7 @@ public class PopulationReport {
      */
     public void getCountryPopulation(String country) {
         try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(
+            ResultSet rs = executeStatement(
                     "SELECT Name, Population FROM country WHERE Name='" + country + "';"
             );
             System.out.println("Country name | Total population");
@@ -102,8 +98,7 @@ public class PopulationReport {
      */
     public void getDistrictPopulation(String district) {
         try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(
+            ResultSet rs = executeStatement(
                     "SELECT District, SUM(Population) as sumPopulation FROM city WHERE District = '" + district + "' GROUP BY District ORDER BY District ASC;"
             );
             System.out.println("District name | Total population");
@@ -124,8 +119,7 @@ public class PopulationReport {
      */
     public void getInOutPopulationByCountry(String country) {
         try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(
+            ResultSet rs = executeStatement(
                     "SELECT country.Name AS 'Country', sum(country.Population - city.CityPopulation) AS 'PopulationOutOfCities', sum(city.CityPopulation) AS 'PopulationInCities', sum(country.Population) AS 'TotalPopulationOfTheCountry' FROM country JOIN ( SELECT CountryCode, SUM(Population) AS CityPopulation FROM city GROUP BY CountryCode) city ON country.Code = city.CountryCode WHERE country.Name = '" + country + "' GROUP BY country.Name ORDER BY country.Name ASC;"
             );
 
@@ -149,8 +143,7 @@ public class PopulationReport {
      */
     public void getInOutPopulationByRegion(String region) {
         try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(
+            ResultSet rs = executeStatement(
                     "SELECT country.region AS 'Region', sum(country.Population - city.CityPopulation) AS 'PopulationOutOfCities', sum(city.CityPopulation) AS 'PopulationInCities', sum(country.Population) AS 'TotalPopulationOfTheRegion' FROM country JOIN ( SELECT CountryCode, SUM(Population) AS CityPopulation FROM city GROUP BY CountryCode) city ON country.Code = city.CountryCode WHERE country.Region ='" + region + "' GROUP BY country.Region ORDER BY country.Region ASC;"
             );
 
@@ -174,8 +167,7 @@ public class PopulationReport {
      */
     public void getAllCapitalsByPopulation() {
         try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(
+            ResultSet rs = executeStatement(
                     "Select country.Name as 'Country Name', city.Name as 'City Name',city.Population FROM city JOIN country on city.ID = country.Capital ORDER BY city.population DESC;"
             );
 
@@ -197,13 +189,7 @@ public class PopulationReport {
      */
     public void getCityPopulation(String city) {
         try {
-            // simple one, city pop is just stored on its own row so no join needed
-            // ? gets filled with the city name below, stops sql injection
-            PreparedStatement stmt = con.prepareStatement(
-                    "SELECT Name, Population FROM city WHERE Name = ?;"
-            );
-            stmt.setString(1, city);
-            ResultSet rs = stmt.executeQuery();
+            ResultSet rs = executeStatement("SELECT Name, Population FROM city WHERE Name = " + city + ";");
             System.out.println("City name | Population");
             while (rs.next()) {
                 System.out.println(
@@ -223,23 +209,16 @@ public class PopulationReport {
      */
     public void getInOutPopulationByContinent(String continent) {
         try {
-            // subquery adds up all the city pops per country first,
-            // then join that to country so i have total vs in cities side by side
-            // out of cities = total - in cities, % = part / total * 100 rounded to 2dp
-            PreparedStatement stmt = con.prepareStatement(
-                    "SELECT country.Continent AS 'Continent', "
-                            + "sum(country.Population) AS 'TotalPopulationOfTheContinent', "
-                            + "sum(city.CityPopulation) AS 'PopulationInCities', "
-                            + "ROUND(sum(city.CityPopulation) / sum(country.Population) * 100, 2) AS 'PercentInCities', "
-                            + "sum(country.Population - city.CityPopulation) AS 'PopulationOutOfCities', "
-                            + "ROUND(sum(country.Population - city.CityPopulation) / sum(country.Population) * 100, 2) AS 'PercentOutOfCities' "
-                            + "FROM country JOIN ( SELECT CountryCode, SUM(Population) AS CityPopulation FROM city GROUP BY CountryCode) city "
-                            + "ON country.Code = city.CountryCode "
-                            + "WHERE country.Continent = ? "
-                            + "GROUP BY country.Continent ORDER BY country.Continent ASC;"
-            );
-            stmt.setString(1, continent);
-            ResultSet rs = stmt.executeQuery();
+            ResultSet rs = executeStatement("SELECT country.Continent AS 'Continent', "
+                    + "sum(country.Population) AS 'TotalPopulationOfTheContinent', "
+                    + "sum(city.CityPopulation) AS 'PopulationInCities', "
+                    + "ROUND(sum(city.CityPopulation) / sum(country.Population) * 100, 2) AS 'PercentInCities', "
+                    + "sum(country.Population - city.CityPopulation) AS 'PopulationOutOfCities', "
+                    + "ROUND(sum(country.Population - city.CityPopulation) / sum(country.Population) * 100, 2) AS 'PercentOutOfCities' "
+                    + "FROM country JOIN ( SELECT CountryCode, SUM(Population) AS CityPopulation FROM city GROUP BY CountryCode) city "
+                    + "ON country.Code = city.CountryCode "
+                    + "WHERE country.Continent = " + continent
+                    + "GROUP BY country.Continent ORDER BY country.Continent ASC;");
             System.out.println("Continent | Total population | In cities | % in cities | Out of cities | % out of cities");
             while (rs.next()) {
                 System.out.println(
@@ -262,13 +241,7 @@ public class PopulationReport {
      */
     public void getTopCapitalsWorld(int n) {
         try {
-            // country.Capital holds the city ID of its capital so joining on that = only capitals
-            // biggest first then LIMIT ? cuts it to the top n
-            PreparedStatement stmt = con.prepareStatement(
-                    "SELECT country.Name AS 'Country Name', city.Name AS 'City Name', city.Population FROM city JOIN country ON city.ID = country.Capital ORDER BY city.Population DESC LIMIT ?;"
-            );
-            stmt.setInt(1, n);
-            ResultSet rs = stmt.executeQuery();
+            ResultSet rs = executeStatement("SELECT country.Name AS 'Country Name', city.Name AS 'City Name', city.Population FROM city JOIN country ON city.ID = country.Capital ORDER BY city.Population DESC LIMIT "+ n +";");
             System.out.println("Capital | Country | Population");
             while (rs.next()) {
                 System.out.println(
@@ -289,17 +262,10 @@ public class PopulationReport {
      */
     public void getTopCapitalsByContinent(String continent, int n) {
         try {
-            // same as top capitals in the world, just filtered to one continent
-            // 1st ? = continent, 2nd ? = n
-            PreparedStatement stmt = con.prepareStatement(
-                    "SELECT city.Name AS 'City Name', country.Name AS 'Country Name', city.Population "
-                            + "FROM city JOIN country ON city.ID = country.Capital "
-                            + "WHERE country.Continent = ? "
-                            + "ORDER BY city.Population DESC LIMIT ?;"
-            );
-            stmt.setString(1, continent);
-            stmt.setInt(2, n);
-            ResultSet rs = stmt.executeQuery();
+            ResultSet rs = executeStatement("SELECT city.Name AS 'City Name', country.Name AS 'Country Name', city.Population "
+                    + "FROM city JOIN country ON city.ID = country.Capital "
+                    + "WHERE country.Continent = " + continent
+                    + "ORDER BY city.Population DESC LIMIT " + n + ";");
             System.out.println("Top " + n + " capital cities in " + continent);
             System.out.println("Capital | Country | Population");
             while (rs.next()) {
@@ -321,16 +287,11 @@ public class PopulationReport {
      */
     public void getTopCapitalsByRegion(String region, int n) {
         try {
-            // same again but by region instead of continent
-            PreparedStatement stmt = con.prepareStatement(
-                    "SELECT city.Name AS 'City Name', country.Name AS 'Country Name', city.Population "
-                            + "FROM city JOIN country ON city.ID = country.Capital "
-                            + "WHERE country.Region = ? "
-                            + "ORDER BY city.Population DESC LIMIT ?;"
-            );
-            stmt.setString(1, region);
-            stmt.setInt(2, n);
-            ResultSet rs = stmt.executeQuery();
+
+            ResultSet rs = executeStatement("SELECT city.Name AS 'City Name', country.Name AS 'Country Name', city.Population "
+                    + "FROM city JOIN country ON city.ID = country.Capital "
+                    + "WHERE country.Region = " + region
+                    + "ORDER BY city.Population DESC LIMIT " + n + ";");
             System.out.println("Top " + n + " capital cities in " + region);
             System.out.println("Capital | Country | Population");
             while (rs.next()) {
@@ -342,6 +303,17 @@ public class PopulationReport {
             }
         } catch (SQLException e) {
             System.out.println(e);
+        }
+    }
+
+    public ResultSet executeStatement(String query) {
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            return rs;
+        } catch (SQLException e) {
+            System.out.println(e);
+            return null;
         }
     }
 }
