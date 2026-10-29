@@ -93,7 +93,7 @@ public class CityReport {
     public ResultSet getAllCitiesByDistrict(String District) {
         try {
             ResultSet rs = executeStatement(
-                    "SELECT c.Name AS cName, c.Population AS cPop FROM city as c WHERE ctry.District ='" + District + "' ORDER BY cPop DESC;"
+                    "SELECT c.Name AS cName, c.Population AS cPop FROM city as c WHERE c.District ='" + District + "' ORDER BY cPop DESC;"
             );
 
             return rs;

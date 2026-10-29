@@ -150,16 +150,9 @@ public class PopulationReport {
      * @param city is the name of the city
      */
     public ResultSet getCityPopulation(String city) {
-        try {
-            ResultSet rs = executeStatement(
-                    "SELECT Name, Population FROM city WHERE Name = '" + city + "';"
-            );
-
-            return rs;
-        } catch (SQLException e) {
-            System.out.println(e);
-            return null;
-        }
+        // PreparedStatement: the name is sent as data, not glued into the SQL,
+        // so names with apostrophes work and SQL injection is not possible
+        return executePrepared("SELECT Name, Population FROM city WHERE Name = ?;", city);
     }
     
     /**
@@ -235,6 +228,25 @@ public class PopulationReport {
                     + "ORDER BY city.Population DESC LIMIT " + n + ";");
 
             return rs;
+        } catch (SQLException e) {
+            System.out.println(e);
+            return null;
+        }
+    }
+
+    /**
+     * Runs a query with ? placeholders, filling them in safely with a PreparedStatement.
+     * @param query  the SQL with a ? for each value
+     * @param params the values for the ?s, in order
+     * @return the results, or null if the query failed
+     */
+    public ResultSet executePrepared(String query, Object... params) {
+        try {
+            PreparedStatement pstmt = con.prepareStatement(query);
+            for (int i = 0; i < params.length; i++) {
+                pstmt.setObject(i + 1, params[i]);
+            }
+            return pstmt.executeQuery();
         } catch (SQLException e) {
             System.out.println(e);
             return null;
