@@ -1,112 +1,45 @@
 # Integration tests
 
-Issue: #84 (sub-issue of #82 – Implement integration tests for MySQL-backed reports)
-Test class: [`src/test/java/com/napier/devops/AppIntegrationTest.java`](../src/test/java/com/napier/devops/AppIntegrationTest.java)
+These go with issue #82 (and my sub-issue #84). The tests are in `src/test/java/com/napier/devops/AppIntegrationTest.java`.
 
-## What they are
+The unit tests check each report method on its own with a mocked database. The integration tests check the app and the real MySQL database actually work together. Each test calls a report method, which runs its SQL against the world database in the `db` container, and then checks what comes back against values I looked up in `db/world.sql`.
 
-Unit tests check a single method on its own. **Integration tests check that the app and the MySQL database work together.** Each test:
+I didn't write one test for every report. I picked reports from all four classes (city, country, population and language) and tested those properly instead, 30 tests in total. Depending on the report, the tests check the actual values (e.g. the biggest city is Mumbai (Bombay) with 10,500,000), that the list is sorted biggest to smallest, that top N gives exactly N rows, and that filters only return the right rows (every row in the Caribbean report is actually in the Caribbean). There are also edge cases like N = 0, N = 1, an N bigger than the whole table, a negative N, a name that doesn't exist, a null name, a name with an apostrophe and an SQL injection attempt. One test adds up every country's population and checks it matches the world population report.
 
-1. calls a real report method (e.g. `CityReport.getTopNCitiesWorld(5)`)
-2. which runs real SQL against the world database in the `db` container
-3. then checks the rows that come back against known values from `db/world.sql`
+## Running them
 
-They are kept separate from the unit tests: their own class (`AppIntegrationTest`) and their own GitHub Actions job (`IntegrationTests`).
+You need Docker Desktop running. Start the database from the project folder:
 
-## Approach: depth over breadth
+```
+docker compose up -d --build db
+```
 
-There are 32 reports. Instead of one shallow test for each, a smaller set of reports from every report class is tested properly (30 tests in total). Each one is checked for:
+It's mapped to `localhost:33060`. The first time, give it about a minute to load `world.sql`. Then run `AppIntegrationTest` in IntelliJ (green arrow next to the class name), or from the terminal:
 
-| Check | Example |
-| --- | --- |
-| Correct values | Largest city is Mumbai (Bombay), 10,500,000 |
-| Sort order | Every list is largest → smallest |
-| Exact row counts | Top 5 gives exactly 5 rows |
-| Filtering | Every row from the Caribbean report really has Region = Caribbean |
-| Edge cases | N = 0, N = 1, N bigger than the table, unknown / empty / null names |
-| Bad input | Negative N, a name with an apostrophe, SQL injection |
-| Cross-checks | All country populations added up = the world population report |
+```
+mvn test -Dtest=com.napier.devops.AppIntegrationTest
+```
 
-## How to run
+All 30 should pass. Run `docker compose down` when you're finished.
 
-**You need:** Docker Desktop running, JDK 17, and Maven (built into IntelliJ).
+If it says it couldn't connect to `localhost:33060`, the container isn't up yet or the data is still loading, so wait and try again. You'll also see two red `SQLSyntaxErrorException ... near '-1'` lines in the output. That's expected, it's the negative N test checking bad input doesn't crash anything.
 
-1. Start the database (from the project folder):
-   ```
-   docker compose up -d --build db
-   ```
-   This maps MySQL to `localhost:33060`. On the first start, wait about a minute while `world.sql` loads.
-   (In IntelliJ you can also open `docker-compose.yml` and click the green arrow next to `db:`.)
-2. Run the tests, either:
-   - **IntelliJ:** open `AppIntegrationTest` → green arrow next to the class name → Run
-   - **Terminal:** `mvn -Dtest=com.napier.devops.AppIntegrationTest test`
-3. You should see **30 tests passed**.
-4. Stop the database when you're done: `docker compose down`
+To let the tests connect, `App.connect()` now takes the database location and a delay. The tests use `localhost:33060` with no delay. Docker passes `db:3306` and 30 seconds through the `Dockerfile`, so `docker compose up` works the same as before. `App.getCon()` gives the tests the connection so they can create the report objects.
 
-### On GitHub Actions
+## On GitHub Actions
 
-The `IntegrationTests` job in `.github/workflows/main.yml`:
-
-1. builds the db image from `db/` and runs it on port 33060
-2. waits until `SELECT COUNT(*) FROM world.city` works (so `world.sql` has finished loading), then 15 more seconds
-3. runs `mvn -Dtest=com.napier.devops.AppIntegrationTest test`
-4. removes the container, even if the tests failed
-
-The `build` job uses `mvn -DskipTests package`, because it has no database. Without `-DskipTests`, Maven would run these tests there and fail.
-
-### How the test connects
-
-`App.connect(String location, int delay)` takes the database address and how long to wait before connecting:
-
-| Where the app runs | Location | Delay |
-| --- | --- | --- |
-| Tests / IntelliJ | `localhost:33060` | 0 ms |
-| Docker (`docker compose up`) | `db:3306` (set in the `Dockerfile`) | 30000 ms |
-
-`App.getCon()` gives the tests the connection so they can build the report objects.
-
-## What's tested
-
-| Report method | Tests |
-| --- | --- |
-| `CityReport.getTopNCitiesWorld` | N = 5 gives 5 rows · Mumbai then Seoul, 10,500,000, sorted · N = 1 gives only Mumbai · N = 0 gives no rows · N = 5000 gives all 4079 cities, last is Adamstown (42) · N = -1 doesn't crash |
-| `CityReport.getTopCitiesByDistrict` | Scotland top 3 = Glasgow, Edinburgh, Aberdeen · top 10 gives 4 (Scotland only has 4) |
-| `CityReport.getAllCitiesByDistrict` | Scotland gives 4 rows, Glasgow first · "" gives the 4 cities with a blank district |
-| `CityReport.getAllCitiesByContinent` | Oceania = 55 cities, sorted |
-| `CityReport.getCitiesInCountryByPopulation` | "Atlantis" gives no rows |
-| `CountryReport.getAllCountriesWorld` | 239 countries, sorted · their populations add up to the world total |
-| `CountryReport.getTopNCountriesInWorld` | Top 5 = China, India, United States, Indonesia, Brazil · N = 0 gives no rows |
-| `CountryReport.getTopCountriesByRegion` | Caribbean top 3 = Cuba, Dominican Republic, Haiti, every row's Region = Caribbean · "Atlantis" gives no rows |
-| `PopulationReport.getWorldPopulation` | 6,078,749,450 |
-| `PopulationReport.getCityPopulation` | Edinburgh = 450,180 · "Atlantis" and null give no rows · "St John's" doesn't break the query · SQL injection gives 0 rows |
-| `PopulationReport.getTopCapitalsWorld` | Seoul first, 9,981,619 · N = 1000 gives all 232 capitals, sorted |
-| `PopulationReport.getTopCapitalsByContinent` | Europe top 3 = Moscow, London, Berlin |
-| `PopulationReport.getInOutPopulationByContinent` | Europe: total 730,074,600, in cities 241,942,813, 33.14%, in + out = total, one row · "Atlantis" gives no rows |
-| `LanguageReport.getLanguageSpeakers` | Chinese first, sorted |
+The integration tests have their own job, `IntegrationTests`. It builds and starts the database container, waits until the `city` table can be queried, runs the tests, then removes the container even if a test failed. The unit test job skips `AppIntegrationTest` because there's no database in that job, and the build job only runs once both test jobs have passed.
 
 ## Bugs the tests found
 
-| Problem | How the test showed it | Fix |
-| --- | --- | --- |
-| `getAllCitiesByDistrict` always returned null | The query used `ctry.District` but `ctry` wasn't in the FROM, so the SQL failed | `ctry.District` → `c.District` in `CityReport` |
-| SQL injection in `getCityPopulation` | Searching for `x' OR '1'='1` returned all 4079 cities | PreparedStatement through a new `executePrepared(sql, params...)` helper in `PopulationReport` |
-| Apostrophes broke `getCityPopulation` | "St John's" ended the SQL string early, causing a syntax error (null) | Same PreparedStatement fix |
+Three tests failed the first time, and I fixed the code:
 
-Each of these tests failed first and passed after the fix.
+- `getAllCitiesByDistrict` always returned null. The query used `ctry.District`, but `ctry` was never in the FROM. Changed it to `c.District`.
+- `getCityPopulation` was open to SQL injection. Searching for `x' OR '1'='1` returned all 4079 cities. It now uses a PreparedStatement through a new `executePrepared()` method in `PopulationReport`.
+- A city name with an apostrophe, like "St John's", broke the same query. The PreparedStatement fixed that too.
 
-**Data quirk:** `world.sql` has 4 cities with a blank District (Taiping, Taiwan is the largest), so `""` is a real district value.
+I also updated two of the unit tests that were checking the old SQL for those two methods, so they match the fixes.
 
-## Troubleshooting
+## Things to know
 
-| What you see | Why / what to do |
-| --- | --- |
-| `Could not connect to the db on localhost:33060 - is the container running?` | The db container isn't up, or `world.sql` is still loading. Run `docker compose up -d db`, wait a minute, then run the tests again |
-| Two red `SQLSyntaxErrorException ... near '-1'` lines in the output | **Expected.** They come from the N = -1 test, which checks that bad input is handled without crashing |
-| JUnit imports are red in IntelliJ | Maven panel (the "m" on the right) → Reload |
-| Port 33060 already in use | Another MySQL container is running. Stop it in Docker Desktop, or run `docker compose down` in the other project |
-
-## Known limitations (for the team)
-
-- The other report methods still glue user input into the SQL (`'" + region + "'`), so they have the same apostrophe / injection problem `getCityPopulation` had. Switching them to `executePrepared` would fix it.
-- `executeStatement` is copied into all four report classes and never closes its Statement.
-- The tests depend on the exact data in `world.sql`. If that file changes, the expected values need updating.
+The other reports still put the user's input straight into the SQL string, so they have the same apostrophe and injection problem `getCityPopulation` had. Moving them to `executePrepared()` would fix it. The tests also rely on the exact data in `world.sql`, so if that file ever changes, some of the expected numbers will need updating.
