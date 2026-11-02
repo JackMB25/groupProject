@@ -2,6 +2,9 @@ package com.napier.devops;
 
 import java.sql.*;
 
+/**
+ * Main App class
+ */
 public class App
 {
     /**
@@ -9,6 +12,10 @@ public class App
      */
     private static Connection con = null;
 
+    /**
+     * main method for calling functions
+     * @param args
+     */
     public static void main(String[] args)
     {
         App app = new App();
@@ -163,7 +170,10 @@ public class App
         }
     }
 
-
+    /**
+     * print results from reports
+     * @param rs result set to be printed
+     */
     public static void printReport(ResultSet rs) {
         if (rs == null) {
             System.out.println("No results");
