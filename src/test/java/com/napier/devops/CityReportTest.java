@@ -90,7 +90,7 @@ public class CityReportTest {
      * Checks that the LIMIT filter applies to the SQL
      */
     @Test
-    void getTopNCitiesWorldTest() throws SQLException{
+    void getTopCitiesWorldTest() throws SQLException{
         // Run the method searching with 3
         cityReport.getTopNCitiesWorld(3);
 
@@ -140,9 +140,9 @@ public class CityReportTest {
      * Checks that the country and LIMIT filters the SQL
      */
     @Test
-    void getTopNCitiesInCountryTest() throws SQLException{
+    void getTopCitiesInCountryTest() throws SQLException{
         // Run the method with Japan and 5 being the test data for country and N
-        cityReport.getTopNCitiesInCountry("Japan", 5);
+        cityReport.getTopCitiesInCountry("Japan", 5);
 
         // Check that SQL received Japan
         verify(stmt).executeQuery(contains("country.Name = 'Japan'"));
@@ -154,9 +154,9 @@ public class CityReportTest {
      * Checks that the continent and LIMIT filters the SQL
      */
     @Test
-    void getTopNCitiesByContinentTest() throws SQLException{
+    void getTopCitiesByContinentTest() throws SQLException{
         // Run the method with Japan and 5 being the test data for country and N
-        cityReport.getTopNCitiesByContinent("Africa", 2);
+        cityReport.getTopCitiesByContinent("Africa", 2);
 
         // Check that SQL received Africa
         verify(stmt).executeQuery(contains("country.Continent = 'Africa'"));
@@ -168,9 +168,9 @@ public class CityReportTest {
      * Checks that the region and LIMIT filters the SQL
      */
     @Test
-    void getTopNCitiesByRegionTest() throws SQLException{
+    void getTopCitiesByRegionTest() throws SQLException{
         //Run the Method with test data
-        cityReport.getTopNCitiesByRegion("Springfield", 8);
+        cityReport.getTopCitiesByRegion("Springfield", 8);
 
         //Check that SQl received Springfield
         verify(stmt).executeQuery(contains("country.Region = 'Springfield'"));
@@ -182,9 +182,9 @@ public class CityReportTest {
      * Checks that the district and LIMIT filters the SQL
      */
     @Test
-    void getTopNCitiesByDistrictTest() throws SQLException{
+    void getTopCitiesByDistrictTest() throws SQLException{
         //Run the Method with test data
-        cityReport.getTopNCitiesByDistrict("Montpelier", 6);
+        cityReport.getTopCitiesByDistrict("Montpelier", 6);
 
         //Check that SQl received Montpelier
         verify(stmt).executeQuery(contains("city.District = 'Montpelier'"));
