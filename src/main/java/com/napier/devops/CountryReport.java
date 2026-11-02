@@ -6,34 +6,38 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * country reports class
+ */
 public class CountryReport {
 
+    /**
+     * database connection
+     */
     private Connection con;
 
+    /**
+     * country reports constructor
+     * @param con database connection to be used
+     */
     public CountryReport(Connection con) {
         this.con = con;
     }
 
     /**
      * Gets the population of each country in the world
+     * @return returns the result set from the query
      */
-    // getAllCountriesWorld()
-    public void getAllCountriesWorld() {
+    public ResultSet getAllCountriesWorld() {
         try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(
+            ResultSet rs = executeStatement(
                     "SELECT c.Name AS cName, c.Population AS cPop FROM country as c ORDER BY cPop DESC;"
             );
 
-            System.out.println("Name | Population");
-            while (rs.next()) {
-                System.out.println(
-                        rs.getString("cName") + " - " +
-                                rs.getInt("cPop")
-                );
-            }
+            return rs;
         } catch (SQLException e) {
             System.out.println(e);
+            return null;
         }
     }
 
@@ -41,134 +45,107 @@ public class CountryReport {
     /**
      * Gets the population of all countries in a selected continent
      * @param continent user selected continent for query
+     * @return returns the result set from the query
      */
-    // getAllCountriesByContinent()
-    public void getAllCountriesByContinent(String continent) {
+    public ResultSet getAllCountriesByContinent(String continent) {
         try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(
+            ResultSet rs = executeStatement(
                     "SELECT c.Name AS cName, c.Population AS cPop FROM country as c WHERE c.Continent='" + continent +"' ORDER BY cPop DESC;"
             );
 
-            System.out.println("Name | Population");
-            while (rs.next()) {
-                System.out.println(
-                        rs.getString("cName") + " - " +
-                                rs.getInt("cPop")
-                );
-            }
+            return rs;
         } catch (SQLException e) {
             System.out.println(e);
+            return null;
         }
     }
 
     /**
      * Gets the population of all countries in a selected region
      * @param region user selected region for query
+     * @return returns the result set from the query
      */
-    // getAllCountriesByRegion()
-    public void getAllCountriesByRegion(String region) {
+    public ResultSet getAllCountriesByRegion(String region) {
         try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(
+            ResultSet rs = executeStatement(
                     "SELECT c.Name AS cName, c.Population AS cPop FROM country as c WHERE c.Region='" + region +"' ORDER BY cPop DESC;"
             );
 
-            System.out.println("Name | Population");
-            while (rs.next()) {
-                System.out.println(
-                        rs.getString("cName") + " - " +
-                                rs.getInt("cPop")
-                );
-            }
+            return rs;
         } catch (SQLException e) {
             System.out.println(e);
+            return null;
         }
     }
-    // getTopCountriesWorld()
-    // getTopCountriesByContinent()
 
     /**
      * Gets and displays the top N populated countries in a region.
      * @param region is the name of the region
      * @param n is the number of countries to show
+     * @return returns the result set from the query
      */
-    public void getTopCountriesByRegion(String region, int n) {
+    public ResultSet getTopCountriesByRegion(String region, int n) {
         try {
-            // left join city on the capital ID to get the capital's name
-            // left join so a country with no capital still shows up
-            // biggest first, LIMIT ? = top n
-            PreparedStatement stmt = con.prepareStatement(
-                    "SELECT country.Code, country.Name, country.Continent, country.Region, country.Population, city.Name AS 'Capital' "
-                            + "FROM country LEFT JOIN city ON country.Capital = city.ID "
-                            + "WHERE country.Region = ? "
-                            + "ORDER BY country.Population DESC LIMIT ?;"
-            );
-            stmt.setString(1, region);
-            stmt.setInt(2, n);
-            ResultSet rs = stmt.executeQuery();
-            System.out.println("Top " + n + " countries in " + region);
-            System.out.println("Code | Name | Continent | Region | Population | Capital");
-            while (rs.next()) {
-                System.out.println(
-                        rs.getString("Code") + " | " +
-                                rs.getString("Name") + " | " +
-                                rs.getString("Continent") + " | " +
-                                rs.getString("Region") + " | " +
-                                rs.getInt("Population") + " | " +
-                                rs.getString("Capital")
-                );
-            }
+            ResultSet rs = executeStatement("SELECT country.Code, country.Name, country.Continent, country.Region, country.Population, city.Name AS 'Capital' "
+                    + "FROM country LEFT JOIN city ON country.Capital = city.ID "
+                    + "WHERE country.Region = '" + region + "'"
+                    + "ORDER BY country.Population DESC LIMIT " + n + ";");
+
+            return rs;
         } catch (SQLException e) {
             System.out.println(e);
+            return null;
         }
     }
 
     /**
      * Prints the top N countries in the world by Population
      * @param Number how many countries to be shown
+     * @return returns the result set from the query
      */
-
-    public void getTopNCountriesInWorld(int Number) {
+    public ResultSet getTopNCountriesInWorld(int Number) {
         try {
-        Statement stmt = con.createStatement();
-        ResultSet rs = stmt.executeQuery(
+        ResultSet rs = executeStatement(
                 "SELECT country.Name as 'Country Name', country.Population as 'Country Population' FROM country ORDER By country.Population DESC LIMIT " + Number );
 
-        while (rs.next()) {
-            System.out.println(
-                    rs.getString("Country Name") + " - " +
-                            rs.getInt("Country Population")
-            );
+        return rs;
+        } catch (SQLException e) {
+            System.out.println(e);
+            return null;
         }
-    } catch (
-    SQLException e) {
-        System.out.println(e);
     }
-}
 
     /**
      * Returns a number of top Countries by population in a Continent
      * @param Continent the name of the continent to search within
      * @param Number the Number of top Countries to return
+     * @return returns the result set from the query
      */
-
-
-public void getTopNCountriesByContinent(String Continent, int Number) {
-    try {
-        Statement stmt = con.createStatement();
-        ResultSet rs = stmt.executeQuery(
+    public ResultSet getTopNCountriesByContinent(String Continent, int Number) {
+        try {
+            ResultSet rs = executeStatement(
                 "SELECT country.Name as 'Country Name', country.Population as 'Country Population' FROM country WHERE country.Continent ='" + Continent + "' ORDER BY country.Population DESC LIMIT " + Number);
 
-        while (rs.next()) {
-            System.out.println(
-                    rs.getString("Country Name") + " - " +
-                            rs.getInt("Country Population")
-            );
+            return rs;
+        } catch (SQLException e) {
+            System.out.println(e);
+            return null;
         }
-    } catch (
-            SQLException e) {
-        System.out.println(e);
     }
-}
+
+    /**
+     * @param query the sql query that will be run
+     * @return @return returns the result set from the query
+     * @throws SQLException throws error if any issues
+     */
+    public ResultSet executeStatement(String query) throws SQLException {
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            return rs;
+        } catch (SQLException e) {
+            System.out.println(e);
+            return null;
+        }
+    }
 }
