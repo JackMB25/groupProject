@@ -6,6 +6,10 @@ public class PopulationReport {
 
     private Connection con;
 
+    /**
+     * Creates a PopulationReport using the provided database connection.
+     * @param con the connection used to execute population queries
+     */
     public PopulationReport(Connection con) {
         this.con = con;
     }
@@ -241,6 +245,12 @@ public class PopulationReport {
         }
     }
 
+    /**
+     * Executes the provided SQL query using the database connection.
+     * @param query the SQL query to execute
+     * @return a ResultSet containing the query results, or null if an SQLException occurs
+     * @throws SQLException declared in the method signature
+     */
     public ResultSet executeStatement(String query) throws SQLException {
         try {
             Statement stmt = con.createStatement();
