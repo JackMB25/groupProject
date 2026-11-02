@@ -132,7 +132,7 @@ public class CityReportTest {
         cityReport.getAllCitiesByDistrict("Racoon City");
 
         // Check that SQL received the test District
-        verify(stmt).executeQuery(contains("ctry.District ='Racoon City'"));
+        verify(stmt).executeQuery(contains("c.District ='Racoon City'"));
 
     }
 

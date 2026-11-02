@@ -169,16 +169,9 @@ public class PopulationReport {
      * @return returns the result set from the query
      */
     public ResultSet getCityPopulation(String city) {
-        try {
-            ResultSet rs = executeStatement(
-                    "SELECT Name, Population FROM city WHERE Name = '" + city + "';"
-            );
-
-            return rs;
-        } catch (SQLException e) {
-            System.out.println(e);
-            return null;
-        }
+        // PreparedStatement: the name is sent as data, not glued into the SQL,
+        // so names with apostrophes work and SQL injection is not possible
+        return executePrepared("SELECT Name, Population FROM city WHERE Name = ?;", city);
     }
     
     /**
@@ -265,8 +258,28 @@ public class PopulationReport {
     }
 
     /**
+     * Runs a query with ? placeholders, filling them in safely with a PreparedStatement.
+     * @param query  the SQL with a ? for each value
+     * @param params the values for the ?s, in order
+     * @return the results, or null if the query failed
+     */
+    public ResultSet executePrepared(String query, Object... params) {
+        try {
+            PreparedStatement pstmt = con.prepareStatement(query);
+            for (int i = 0; i < params.length; i++) {
+                pstmt.setObject(i + 1, params[i]);
+            }
+            return pstmt.executeQuery();
+        } catch (SQLException e) {
+            System.out.println(e);
+            return null;
+        }
+    }
+
+    /**
+     * Runs a SQL query that has no user input in it.
      * @param query the sql query that will be run
-     * @return @return returns the result set from the query
+     * @return returns the result set from the query
      * @throws SQLException throws error if any issues
      */
     public ResultSet executeStatement(String query) throws SQLException {

@@ -183,13 +183,17 @@ public class PopulationReportTest {
     @Test
     void getCityPopulationTest() throws SQLException {
 
+        // getCityPopulation uses a PreparedStatement, so the name is passed as a parameter
+        PreparedStatement pstmt = mock(PreparedStatement.class);
+        when(con.prepareStatement(anyString())).thenReturn(pstmt);
+        when(pstmt.executeQuery()).thenReturn(rs);
+
         ResultSet result = report.getCityPopulation("London");
 
         assertSame(rs, result);
 
-        verify(stmt).executeQuery(
-                "SELECT Name, Population FROM city WHERE Name = 'London';"
-        );
+        verify(con).prepareStatement("SELECT Name, Population FROM city WHERE Name = ?;");
+        verify(pstmt).setObject(1, "London");
     }
 
     /**

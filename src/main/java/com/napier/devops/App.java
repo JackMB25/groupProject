@@ -3,7 +3,8 @@ package com.napier.devops;
 import java.sql.*;
 
 /**
- * Main App class
+ * Entry point for the population reporting system. Connects to the world database,
+ * runs the reports and prints the results.
  */
 public class App
 {
@@ -13,14 +14,27 @@ public class App
     private static Connection con = null;
 
     /**
-     * main method for calling functions
-     * @param args
+     * Starts the app: connects to the database, runs the reports, then disconnects.
+     *
+     * @param args optional: args[0] = database location (e.g. "db:3306"),
+     *             args[1] = delay in milliseconds before connecting. With no args the app
+     *             connects to "localhost:33060" straight away (for running in IntelliJ).
      */
     public static void main(String[] args)
     {
         App app = new App();
 
-        app.connect();
+        // Connect to the database.
+        // No arguments = running locally (IntelliJ), so use the db container's
+        // mapped port with no wait. Docker passes "db:3306" and a delay instead.
+        if (args.length < 1)
+        {
+            app.connect("localhost:33060", 0);
+        }
+        else
+        {
+            app.connect(args[0], Integer.parseInt(args[1]));
+        }
 
         // create objects for each type of reports
         LanguageReport lr = new LanguageReport(con);
@@ -106,8 +120,11 @@ public class App
 
     /**
      * Connect to the MySQL database.
+     *
+     * @param location host and port of the database, e.g. "localhost:33060" or "db:3306"
+     * @param delay    milliseconds to wait before each connection attempt (gives the db time to start)
      */
-    public void connect()
+    public void connect(String location, int delay)
     {
         try
         {
@@ -127,11 +144,11 @@ public class App
             try
             {
                 // Wait a bit for db to start
-                Thread.sleep(30000);
+                Thread.sleep(delay);
 
                 // Connect to database
                 con = DriverManager.getConnection(
-                        "jdbc:mysql://db:3306/world?allowPublicKeyRetrieval=true&useSSL=false",
+                        "jdbc:mysql://" + location + "/world?allowPublicKeyRetrieval=true&useSSL=false",
                         "root",
                         "example"
                 );
@@ -149,6 +166,16 @@ public class App
                 System.out.println("Thread interrupted? Should not happen.");
             }
         }
+    }
+
+    /**
+     * Gets the current database connection, so tests can pass it to the report classes.
+     *
+     * @return the connection, or null if connect() has not succeeded
+     */
+    public static Connection getCon()
+    {
+        return con;
     }
 
     /**
@@ -170,9 +197,12 @@ public class App
         }
     }
 
+
     /**
-     * print results from reports
-     * @param rs result set to be printed
+     * Prints any report as a table: column headings, a separator line, then one line per row.
+     * Prints "No results" if the report returned null.
+     *
+     * @param rs the result returned by a report method
      */
     public static void printReport(ResultSet rs) {
         if (rs == null) {
