@@ -6,18 +6,28 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * country reports class
+ */
 public class CountryReport {
 
+    /**
+     * database connection
+     */
     private Connection con;
 
+    /**
+     * country reports constructor
+     * @param con database connection to be used
+     */
     public CountryReport(Connection con) {
         this.con = con;
     }
 
     /**
      * Gets the population of each country in the world
+     * @return returns the result set from the query
      */
-    // getAllCountriesWorld()
     public ResultSet getAllCountriesWorld() {
         try {
             ResultSet rs = executeStatement(
@@ -35,8 +45,8 @@ public class CountryReport {
     /**
      * Gets the population of all countries in a selected continent
      * @param continent user selected continent for query
+     * @return returns the result set from the query
      */
-    // getAllCountriesByContinent()
     public ResultSet getAllCountriesByContinent(String continent) {
         try {
             ResultSet rs = executeStatement(
@@ -53,8 +63,8 @@ public class CountryReport {
     /**
      * Gets the population of all countries in a selected region
      * @param region user selected region for query
+     * @return returns the result set from the query
      */
-    // getAllCountriesByRegion()
     public ResultSet getAllCountriesByRegion(String region) {
         try {
             ResultSet rs = executeStatement(
@@ -67,13 +77,12 @@ public class CountryReport {
             return null;
         }
     }
-    // getTopCountriesWorld()
-    // getTopCountriesByContinent()
 
     /**
      * Gets and displays the top N populated countries in a region.
      * @param region is the name of the region
      * @param n is the number of countries to show
+     * @return returns the result set from the query
      */
     public ResultSet getTopCountriesByRegion(String region, int n) {
         try {
@@ -92,28 +101,26 @@ public class CountryReport {
     /**
      * Prints the top N countries in the world by Population
      * @param Number how many countries to be shown
+     * @return returns the result set from the query
      */
-
     public ResultSet getTopNCountriesInWorld(int Number) {
         try {
         ResultSet rs = executeStatement(
                 "SELECT country.Name as 'Country Name', country.Population as 'Country Population' FROM country ORDER By country.Population DESC LIMIT " + Number );
 
         return rs;
-    } catch (
-    SQLException e) {
-        System.out.println(e);
-        return null;
+        } catch (SQLException e) {
+            System.out.println(e);
+            return null;
+        }
     }
-}
 
     /**
      * Returns a number of top Countries by population in a Continent
      * @param Continent the name of the continent to search within
      * @param Number the Number of top Countries to return
+     * @return returns the result set from the query
      */
-
-
     public ResultSet getTopNCountriesByContinent(String Continent, int Number) {
         try {
             ResultSet rs = executeStatement(
@@ -126,6 +133,11 @@ public class CountryReport {
         }
     }
 
+    /**
+     * @param query the sql query that will be run
+     * @return @return returns the result set from the query
+     * @throws SQLException throws error if any issues
+     */
     public ResultSet executeStatement(String query) throws SQLException {
         try {
             Statement stmt = con.createStatement();

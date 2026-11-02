@@ -2,13 +2,19 @@ package com.napier.devops;
 
 import java.sql.*;
 
+/**
+ * population report class
+ */
 public class PopulationReport {
 
+    /**
+     * database connection
+     */
     private Connection con;
 
     /**
-     * Creates a PopulationReport using the provided database connection.
-     * @param con the connection used to execute population queries
+     * population report constructor
+     * @param con database connection to be used
      */
     public PopulationReport(Connection con) {
         this.con = con;
@@ -16,6 +22,7 @@ public class PopulationReport {
 
     /**
      * Gets and displays the total population of the world from the World database.
+     * @return returns the result set from the query
      */
     public ResultSet getWorldPopulation() {
         try {
@@ -31,8 +38,9 @@ public class PopulationReport {
     }
 
     /**
-     * \Gets and displays the total population of the continent from the World database.
+     * Gets and displays the total population of the continent from the World database.
      * @param continent Is the name of the continent.
+     * @return returns the result set from the query
      */
     public ResultSet getContinentPopulation(String continent) {
         try {
@@ -50,6 +58,7 @@ public class PopulationReport {
     /**
      * Gets and displays the total population of the region from the World database.
      * @param region is the name of the region
+     * @return returns the result set from the query
      */
     public ResultSet getRegionPopulation(String region) {
         try {
@@ -67,6 +76,7 @@ public class PopulationReport {
     /**
      * Gets and displays the total population of the country from the World database.
      * @param country is the name of the country.
+     * @return returns the result set from the query
      */
     public ResultSet getCountryPopulation(String country) {
         try {
@@ -84,6 +94,7 @@ public class PopulationReport {
     /**
      * Gets and displays the total population of the district from the World database.
      * @param district is the name of the district
+     * @return returns the result set from the query
      */
     public ResultSet getDistrictPopulation(String district) {
         try {
@@ -101,6 +112,7 @@ public class PopulationReport {
     /**
      * Gets and displays population that live in and out of cities by country from the World database.
      * @param country is the name of the country
+     * @return returns the result set from the query
      */
     public ResultSet getInOutPopulationByCountry(String country) {
         try {
@@ -118,6 +130,7 @@ public class PopulationReport {
     /**
      * Gets and displays population that live in and out of cities by region from the World database.
      * @param region is the name of the region
+     * @return returns the result set from the query
      */
     public ResultSet getInOutPopulationByRegion(String region) {
         try {
@@ -135,6 +148,7 @@ public class PopulationReport {
 
     /**
      * Prints all Capital Cities ordered by their population
+     * @return returns the result set from the query
      */
     public ResultSet getAllCapitalsByPopulation() {
         try {
@@ -152,6 +166,7 @@ public class PopulationReport {
     /**
      * Gets and displays the population of a city from the World database.
      * @param city is the name of the city
+     * @return returns the result set from the query
      */
     public ResultSet getCityPopulation(String city) {
         try {
@@ -170,6 +185,7 @@ public class PopulationReport {
      * Gets and displays population that live in and out of cities by continent from the World database,
      * including the percentage of people living in and out of cities.
      * @param continent is the name of the continent
+     * @return returns the result set from the query
      */
     public ResultSet getInOutPopulationByContinent(String continent) {
         try {
@@ -194,6 +210,7 @@ public class PopulationReport {
     /**
      * Gets and displays the top N populated capital cities in the world.
      * @param n is the number of capital cities to show
+     * @return returns the result set from the query
      */
     public ResultSet getTopCapitalsWorld(int n) {
         try {
@@ -210,6 +227,7 @@ public class PopulationReport {
      * Gets and displays the top N populated capital cities in a continent.
      * @param continent is the name of the continent
      * @param n is the number of capital cities to show
+     * @return returns the result set from the query
      */
     public ResultSet getTopCapitalsByContinent(String continent, int n) {
         try {
@@ -229,6 +247,7 @@ public class PopulationReport {
      * Gets and displays the top N populated capital cities in a region.
      * @param region is the name of the region
      * @param n is the number of capital cities to show
+     * @return returns the result set from the query
      */
     public ResultSet getTopCapitalsByRegion(String region, int n) {
         try {
@@ -246,10 +265,9 @@ public class PopulationReport {
     }
 
     /**
-     * Executes the provided SQL query using the database connection.
-     * @param query the SQL query to execute
-     * @return a ResultSet containing the query results, or null if an SQLException occurs
-     * @throws SQLException declared in the method signature
+     * @param query the sql query that will be run
+     * @return @return returns the result set from the query
+     * @throws SQLException throws error if any issues
      */
     public ResultSet executeStatement(String query) throws SQLException {
         try {
