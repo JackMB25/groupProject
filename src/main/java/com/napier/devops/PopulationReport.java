@@ -55,7 +55,7 @@ public class PopulationReport {
     public ResultSet getContinentPopulation(String continent) {
         try {
             ResultSet rs = executeStatement(
-                    "SELECT Name, Population FROM country WHERE Continent='" + continent + "' ORDER BY Name ASC;"
+                    "SELECT Continent, SUM(Population) AS sumPopulation FROM country WHERE Continent='" + continent + "' GROUP BY Continent;"
             );
 
             return rs;
@@ -75,7 +75,7 @@ public class PopulationReport {
     public ResultSet getRegionPopulation(String region) {
         try {
             ResultSet rs = executeStatement(
-                    "SELECT Region, SUM(Population) as sumPopulation FROM country WHERE Region='" + region + "';"
+                    "SELECT Region, SUM(Population) as sumPopulation FROM country WHERE Region='" + region + "' GROUP BY Region;"
             );
 
             return rs;

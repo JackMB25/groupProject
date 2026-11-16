@@ -2,9 +2,14 @@ package com.napier.devops;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Depth over breadth: fewer reports, each checked for the right values, sort order, row counts,
  * filters, edge cases (N = 0, N = 1, big N, unknown / empty / null names) and bad input.
  */
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class AppIntegrationTest
 {
     /**
@@ -122,6 +128,87 @@ public class AppIntegrationTest
             assertTrue(values.get(i - 1) >= values.get(i),
                     "Not sorted largest to smallest at row " + (i + 1));
         }
+    }
+
+    /**
+     * Counts the rows in a table straight from the database.
+     * @param table is the table name
+     * @return the number of rows
+     * @throws SQLException if the query fails
+     */
+    private static long countRows(String table) throws SQLException
+    {
+        try (Statement stmt = App.getCon().createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM " + table))
+        {
+            rs.next();
+            return rs.getLong(1);
+        }
+    }
+
+    // ---------- Database connection (runs first) ----------
+
+    /**
+     * Tests the app is connected and the connection is open. Runs first: if this fails,
+     * every other test would fail too, so the real problem shows up straight away.
+     * @throws SQLException if the connection can't be checked
+     */
+    @Test
+    @Order(1)
+    void connectionIsOpen() throws SQLException
+    {
+        Connection con = App.getCon();
+        assertNotNull(con, "No connection - is the db container running on localhost:33060?");
+        assertFalse(con.isClosed());
+    }
+
+    /**
+     * Tests the database actually answers, not just that a connection object exists.
+     * @throws SQLException if the connection can't be checked
+     */
+    @Test
+    @Order(2)
+    void connectionIsValid() throws SQLException
+    {
+        assertTrue(App.getCon().isValid(5), "Connection exists but the database isn't responding");
+    }
+
+    /**
+     * Tests we're connected to the world database and not another one on the same server.
+     * @throws SQLException if the connection can't be checked
+     */
+    @Test
+    @Order(3)
+    void connectedToWorldDatabase() throws SQLException
+    {
+        assertEquals("world", App.getCon().getCatalog());
+    }
+
+    /**
+     * Tests world.sql has fully loaded: the three tables exist and have the right number of rows
+     * (4079 cities, 239 countries, 984 country languages). Catches an empty or half-loaded db.
+     * @throws SQLException if the query fails
+     */
+    @Test
+    @Order(4)
+    void worldTablesAreLoaded() throws SQLException
+    {
+        assertEquals(4079L, countRows("city"));
+        assertEquals(239L, countRows("country"));
+        assertEquals(984L, countRows("countrylanguage"));
+    }
+
+    /**
+     * Tests connecting to a wrong address doesn't crash the app, and doesn't break the
+     * connection that's already working.
+     * @throws SQLException if the connection can't be checked
+     */
+    @Test
+    @Order(5)
+    void connectToWrongLocationDoesNotCrash() throws SQLException
+    {
+        assertDoesNotThrow(() -> new App().connect("localhost:1", 0));
+        assertTrue(App.getCon().isValid(5));
     }
 
     // ---------- CityReport - getTopNCitiesWorld(n) ----------
@@ -275,6 +362,121 @@ public class AppIntegrationTest
         assertTrue(column(rs, 1).isEmpty());
     }
 
+    // ---------- CityReport - all cities, regions, countries, continents (CR4) ----------
+
+    /**
+     * Tests all cities in the world gives all 4079, Mumbai first, sorted largest first.
+     * @throws SQLException if the query fails
+     */
+    @Test
+    void allCitiesWorldReturnsEveryCitySorted() throws SQLException
+    {
+        ResultSet rs = cityReport.getAllCitiesWorld();
+        assertNotNull(rs);
+        List<String> names = column(rs, 1);
+        assertEquals(4079, names.size());
+        assertEquals("Mumbai (Bombay)", names.get(0));
+        assertDescending(numbers(cityReport.getAllCitiesWorld(), 2));
+    }
+
+    /**
+     * Tests the British Islands region gives 83 cities with London (7,285,000) first, sorted.
+     * @throws SQLException if the query fails
+     */
+    @Test
+    void allCitiesByRegionBritishIslands() throws SQLException
+    {
+        List<Long> pops = numbers(cityReport.getAllCitiesByRegion("British Islands"), 2);
+        assertEquals(83, pops.size());
+        assertEquals(7285000L, pops.get(0).longValue());
+        assertDescending(pops);
+        assertEquals("London", column(cityReport.getAllCitiesByRegion("British Islands"), 1).get(0));
+    }
+
+    /**
+     * Tests a region that doesn't exist gives no cities.
+     * @throws SQLException if the query fails
+     */
+    @Test
+    void allCitiesByUnknownRegionReturnsNoRows() throws SQLException
+    {
+        ResultSet rs = cityReport.getAllCitiesByRegion("Atlantis");
+        assertNotNull(rs);
+        assertTrue(column(rs, 1).isEmpty());
+    }
+
+    /**
+     * Tests the top 3 cities in the United Kingdom are London, Birmingham, Glasgow
+     * and every row really is in the United Kingdom.
+     * @throws SQLException if the query fails
+     */
+    @Test
+    void topCitiesInCountryUnitedKingdom() throws SQLException
+    {
+        ResultSet rs = cityReport.getTopCitiesInCountry("United Kingdom", 3);
+        assertNotNull(rs);
+        List<String> names = new ArrayList<>();
+        while (rs.next())
+        {
+            names.add(rs.getString("cName"));
+            assertEquals("United Kingdom", rs.getString("countryName"));
+        }
+        rs.getStatement().close();
+        assertEquals(List.of("London", "Birmingham", "Glasgow"), names);
+    }
+
+    /**
+     * Tests that N = 0 gives no cities for a country instead of an error.
+     * @throws SQLException if the query fails
+     */
+    @Test
+    void topCitiesInCountryWithZeroReturnsNoRows() throws SQLException
+    {
+        ResultSet rs = cityReport.getTopCitiesInCountry("United Kingdom", 0);
+        assertNotNull(rs);
+        assertTrue(column(rs, 1).isEmpty());
+    }
+
+    /**
+     * Tests the top 3 cities in Europe are Moscow, London, St Petersburg.
+     * @throws SQLException if the query fails
+     */
+    @Test
+    void topCitiesByContinentEurope() throws SQLException
+    {
+        List<String> names = column(cityReport.getTopCitiesByContinent("Europe", 3), 1);
+        assertEquals(List.of("Moscow", "London", "St Petersburg"), names);
+    }
+
+    /**
+     * Tests asking for the top 100 cities in Oceania gives all 55, the same number as
+     * the all cities in a continent report (cross-check between two reports).
+     * @throws SQLException if the query fails
+     */
+    @Test
+    void topCitiesByContinentMatchesAllCitiesByContinent() throws SQLException
+    {
+        List<Long> top = numbers(cityReport.getTopCitiesByContinent("Oceania", 100), 4);
+        List<Long> all = numbers(cityReport.getAllCitiesByContinent("Oceania"), 2);
+        assertEquals(55, top.size());
+        assertEquals(all, top);
+    }
+
+    /**
+     * Tests all capitals in Europe gives 46, sorted, and the top 3 match the
+     * top capitals in a continent report (Moscow, London, Berlin).
+     * @throws SQLException if the query fails
+     */
+    @Test
+    void capitalsInContinentEurope() throws SQLException
+    {
+        List<Long> pops = numbers(cityReport.getCapitalsInContinentByPopulation("Europe"), 3);
+        assertEquals(46, pops.size());
+        assertDescending(pops);
+        List<String> names = column(cityReport.getCapitalsInContinentByPopulation("Europe"), 1);
+        assertEquals(column(populationReport.getTopCapitalsByContinent("Europe", 3), 1), names.subList(0, 3));
+    }
+
     // ---------- CountryReport ----------
 
     /**
@@ -359,6 +561,53 @@ public class AppIntegrationTest
         assertTrue(column(rs, 1).isEmpty());
     }
 
+    // ---------- CountryReport - continents (CR4) ----------
+
+    /**
+     * Tests all countries in Europe gives 46 with the Russian Federation first, sorted,
+     * and they add up to Europe's population (730,074,600).
+     * @throws SQLException if the query fails
+     */
+    @Test
+    void allCountriesByContinentEurope() throws SQLException
+    {
+        List<String> names = column(countryReport.getAllCountriesByContinent("Europe"), 1);
+        assertEquals(46, names.size());
+        assertEquals("Russian Federation", names.get(0));
+
+        List<Long> pops = numbers(countryReport.getAllCountriesByContinent("Europe"), 2);
+        assertDescending(pops);
+        long total = 0;
+        for (long p : pops)
+        {
+            total += p;
+        }
+        assertEquals(730074600L, total);
+    }
+
+    /**
+     * Tests the top 3 countries in Asia are China, India, Indonesia.
+     * @throws SQLException if the query fails
+     */
+    @Test
+    void topNCountriesByContinentAsia() throws SQLException
+    {
+        List<String> names = column(countryReport.getTopNCountriesByContinent("Asia", 3), 1);
+        assertEquals(List.of("China", "India", "Indonesia"), names);
+    }
+
+    /**
+     * Tests that N = 0 gives no countries for a continent instead of an error.
+     * @throws SQLException if the query fails
+     */
+    @Test
+    void topNCountriesByContinentWithZeroReturnsNoRows() throws SQLException
+    {
+        ResultSet rs = countryReport.getTopNCountriesByContinent("Asia", 0);
+        assertNotNull(rs);
+        assertTrue(column(rs, 1).isEmpty());
+    }
+
     // ---------- PopulationReport - world and city populations ----------
 
     /**
@@ -431,6 +680,56 @@ public class AppIntegrationTest
         assertEquals(0, column(rs, 1).size(), "SQL injection - the input was run as SQL");
     }
 
+    // ---------- PopulationReport - continent, region, country totals (CR4) ----------
+
+    /**
+     * Tests the population of Europe is one row with the total, 730,074,600.
+     * This found a bug: the query listed every country in Europe instead of adding them up.
+     * @throws SQLException if the query fails
+     */
+    @Test
+    void continentPopulationEurope() throws SQLException
+    {
+        ResultSet rs = populationReport.getContinentPopulation("Europe");
+        assertNotNull(rs, "getContinentPopulation returned null - SQL error in the query");
+        assertEquals(List.of(730074600L), numbers(rs, 2));
+    }
+
+    /**
+     * Tests the population of the British Islands region is one row with the total, 63,398,500.
+     * This found a bug: SUM without GROUP BY is rejected by MySQL 8, so it returned null.
+     * @throws SQLException if the query fails
+     */
+    @Test
+    void regionPopulationBritishIslands() throws SQLException
+    {
+        ResultSet rs = populationReport.getRegionPopulation("British Islands");
+        assertNotNull(rs, "getRegionPopulation returned null - SQL error in the query");
+        assertEquals(List.of(63398500L), numbers(rs, 2));
+    }
+
+    /**
+     * Tests the population of the United Kingdom is 59,623,400.
+     * @throws SQLException if the query fails
+     */
+    @Test
+    void countryPopulationUnitedKingdom() throws SQLException
+    {
+        assertEquals(List.of(59623400L), numbers(populationReport.getCountryPopulation("United Kingdom"), 2));
+    }
+
+    /**
+     * Tests a country that doesn't exist gives no rows.
+     * @throws SQLException if the query fails
+     */
+    @Test
+    void countryPopulationOfUnknownCountryReturnsNoRows() throws SQLException
+    {
+        ResultSet rs = populationReport.getCountryPopulation("Atlantis");
+        assertNotNull(rs);
+        assertTrue(column(rs, 1).isEmpty());
+    }
+
     // ---------- PopulationReport - capital cities ----------
 
     /**
@@ -472,6 +771,25 @@ public class AppIntegrationTest
         assertEquals(List.of("Moscow", "London", "Berlin"), names);
     }
 
+    /**
+     * Tests all capitals in the world gives 232 with Seoul first, sorted largest first,
+     * the same number as the top capitals report with a large N (cross-check).
+     * @throws SQLException if the query fails
+     */
+    @Test
+    void allCapitalsByPopulationReturnsEveryCapital() throws SQLException
+    {
+        ResultSet rs = populationReport.getAllCapitalsByPopulation();
+        assertNotNull(rs);
+        List<String> names = column(rs, 2);
+        assertEquals(232, names.size());
+        assertEquals("Seoul", names.get(0));
+
+        List<Long> pops = numbers(populationReport.getAllCapitalsByPopulation(), 3);
+        assertDescending(pops);
+        assertEquals(numbers(populationReport.getTopCapitalsWorld(1000), 3), pops);
+    }
+
     // ---------- PopulationReport - people living in and out of cities ----------
 
     /**
@@ -504,6 +822,25 @@ public class AppIntegrationTest
         ResultSet rs = populationReport.getInOutPopulationByContinent("Atlantis");
         assertNotNull(rs);
         assertTrue(column(rs, 1).isEmpty());
+    }
+
+    /**
+     * Tests the in/out of cities numbers for the United Kingdom: total 59,623,400 (the same as
+     * the country population report), in cities 22,436,673, and in + out adds up to the total.
+     * @throws SQLException if the query fails
+     */
+    @Test
+    void inOutPopulationByCountryUnitedKingdom() throws SQLException
+    {
+        ResultSet rs = populationReport.getInOutPopulationByCountry("United Kingdom");
+        assertNotNull(rs);
+        assertTrue(rs.next());
+        assertEquals(59623400L, rs.getLong("TotalPopulationOfTheCountry"));
+        assertEquals(22436673L, rs.getLong("PopulationInCities"));
+        assertEquals(rs.getLong("TotalPopulationOfTheCountry"),
+                rs.getLong("PopulationInCities") + rs.getLong("PopulationOutOfCities"));
+        assertFalse(rs.next(), "Should be exactly one row");
+        rs.getStatement().close();
     }
 
     // ---------- LanguageReport ----------
