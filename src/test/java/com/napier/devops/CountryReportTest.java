@@ -75,4 +75,26 @@ public class CountryReportTest {
                 "SELECT c.Name AS cName, c.Population AS cPop FROM country as c WHERE c.Continent='Europe' ORDER BY cPop DESC;"
         );
     }
+
+    /**
+     * Tests that getAllCountriesByRegion returns the mocked ResultSet
+     * and executes the expected SQL query for the specified region.
+     *
+     * @throws SQLException if a database error occurs
+     */
+    @Test
+    void getAllCountriesByRegionTest()  throws SQLException {
+
+        // Call the method being tested
+        ResultSet result = report.getAllCountriesByRegion("British Islands");
+
+        // Call the method being tested
+        assertSame(rs, result);
+
+        // Verify that the correct SQL query was executed
+        verify(stmt).executeQuery(
+                "SELECT c.Name AS cName, c.Population AS cPop FROM country as c WHERE c.Region='British Islands' ORDER BY cPop DESC;"
+        );
+
+    }
 }
