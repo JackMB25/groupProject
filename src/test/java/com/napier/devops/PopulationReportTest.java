@@ -70,7 +70,7 @@ public class PopulationReportTest {
         assertSame(rs, result);
 
         verify(stmt).executeQuery(
-                "SELECT Name, Population FROM country WHERE Continent='Europe' ORDER BY Name ASC;"
+                "SELECT Continent, SUM(Population) AS sumPopulation FROM country WHERE Continent='Europe' GROUP BY Continent;"
         );
     }
 
@@ -87,7 +87,7 @@ public class PopulationReportTest {
         assertSame(rs, result);
 
         verify(stmt).executeQuery(
-                "SELECT Region, SUM(Population) as sumPopulation FROM country WHERE Region='British Islands';"
+                "SELECT Region, SUM(Population) as sumPopulation FROM country WHERE Region='British Islands' GROUP BY Region;"
         );
     }
     /**
