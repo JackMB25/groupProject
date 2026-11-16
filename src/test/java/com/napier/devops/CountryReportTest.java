@@ -43,12 +43,36 @@ public class CountryReportTest {
     @Test
     void getAllCountriesWorldTest () throws SQLException {
 
+        // Call the method being tested
         ResultSet result = report.getAllCountriesWorld();
 
+        // Call the method being tested
         assertSame(rs, result);
 
+        // Verify that the correct SQL query was executed
         verify(stmt).executeQuery(
                 "SELECT c.Name AS cName, c.Population AS cPop FROM country as c ORDER BY cPop DESC;"
+        );
+    }
+
+    /**
+     * Tests that getAllCountriesByContinent returns the mocked ResultSet
+     * and executes the expected SQL query for the specified continent.
+     *
+     * @throws SQLException if a database error occurs
+     */
+    @Test
+    void getAllCountriesByContinentTest() throws SQLException {
+
+        // Call the method being tested
+        ResultSet result = report.getAllCountriesByContinent("Europe");
+
+        // Call the method being tested
+        assertSame(rs, result);
+
+        // Verify that the correct SQL query was executed
+        verify(stmt).executeQuery(
+                "SELECT c.Name AS cName, c.Population AS cPop FROM country as c WHERE c.Continent='Europe' ORDER BY cPop DESC;"
         );
     }
 }
