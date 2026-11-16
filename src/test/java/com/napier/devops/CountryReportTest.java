@@ -153,4 +153,46 @@ public class CountryReportTest {
         // Verify that the correct SQL query was executed
         verify(stmt).executeQuery("SELECT country.Name as 'Country Name', country.Population as 'Country Population' FROM country WHERE country.Continent ='Europe' ORDER BY country.Population DESC LIMIT 4");
     }
+
+    /**
+     * Tests that executeStatement returns the mocked ResultSet and passes the supplied SQL query to the database statement.
+     *
+     * @throws SQLException - exception if SQL error occurs
+     */
+    @Test
+    void executeStatementTest() throws SQLException {
+
+        String query = "SELECT * FROM country;";
+
+        ResultSet result = report.executeStatement(query);
+
+        assertSame(rs, result);
+
+        verify(con).createStatement();
+
+        verify(stmt).executeQuery(query);
+    }
+
+    /**
+     * Tests that executeStatement returns null when the mocked database statement throws an SQLException.
+     *
+     * @throws SQLException - exception if SQL error occurs
+     */
+    @Test
+
+    void executeStatementSQLExceptionTest() throws SQLException {
+
+        // Simulate an SQL error
+
+        when(stmt.executeQuery(anyString()))
+
+                .thenThrow(new SQLException("Database error"));
+
+        ResultSet result = report.executeStatement(
+                "SELECT * FROM country;"
+        );
+
+        // Current executeStatement() catches SQLException and returns null
+        assertNull(result);
+    }
 }
