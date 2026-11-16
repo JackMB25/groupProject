@@ -98,7 +98,7 @@ public class CountryReportTest {
     }
 
     /**
-     * Tests that getAllCountriesByRegion returns the mocked ResultSet
+     * Tests that getTopCountriesByRegion returns the mocked ResultSet
      * and executes the expected SQL query for the specified region.
      *
      * @throws SQLException if a database error occurs
@@ -117,5 +117,23 @@ public class CountryReportTest {
                 + "FROM country LEFT JOIN city ON country.Capital = city.ID "
                 + "WHERE country.Region = 'British Islands'"
                 + "ORDER BY country.Population DESC LIMIT 4;");
+    }
+
+    /**
+     * Tests that getTopNCountriesInWorld returns the mocked ResultSet
+     * and executes the expected SQL query with the specified limit.
+     *
+     * @throws SQLException if a database error occurs
+     */
+    @Test
+    void getTopNCountriesInWorldTest()  throws SQLException {
+        // Call the method being tested
+        ResultSet result = report.getTopNCountriesInWorld(4);
+
+        // Call the method being tested
+        assertSame(rs, result);
+
+        // Verify that the correct SQL query was executed
+        verify(stmt).executeQuery("SELECT country.Name as 'Country Name', country.Population as 'Country Population' FROM country ORDER By country.Population DESC LIMIT 4" );
     }
 }
