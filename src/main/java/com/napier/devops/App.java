@@ -1,6 +1,8 @@
 package com.napier.devops;
 
 import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Entry point for the population reporting system. Connects to the world database,
@@ -12,6 +14,11 @@ public class App
      * Connection to MySQL database.
      */
     private static Connection con = null;
+
+    /**
+     * Setup Logger
+     */
+    private static final Logger log = Logger.getLogger(App.class.getName());
 
     /**
      * Starts the app: connects to the database, runs the reports, then disconnects.
@@ -133,14 +140,18 @@ public class App
         }
         catch (ClassNotFoundException e)
         {
-            System.out.println("Could not load SQL driver");
-            System.exit(-1);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("Could not load SQL driver");
+                System.exit(-1);
+            }
         }
 
         int retries = 10;
         for (int i = 0; i < retries; ++i)
         {
-            System.out.println("Connecting to database...");
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("Connecting to database...");
+            }
             try
             {
                 // Wait a bit for db to start
@@ -152,18 +163,23 @@ public class App
                         "root",
                         "example"
                 );
-
-                System.out.println("Successfully connected");
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("Successfully connected");
+                }
                 break;
             }
             catch (SQLException sqle)
             {
-                System.out.println("Failed to connect to database attempt " + Integer.toString(i));
-                System.out.println(sqle.getMessage());
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("Failed to connect to database attempt " + Integer.toString(i));
+                    log.fine(sqle.getMessage());
+                }
             }
             catch (InterruptedException ie)
             {
-                System.out.println("Thread interrupted? Should not happen.");
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("Thread interrupted? Should not happen.");
+                }
             }
         }
     }
@@ -192,7 +208,9 @@ public class App
             }
             catch (Exception e)
             {
-                System.out.println("Error closing connection to database");
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("Error closing connection to database");
+                }
             }
         }
     }
@@ -206,7 +224,9 @@ public class App
      */
     public static void printReport(ResultSet rs) {
         if (rs == null) {
-            System.out.println("No results");
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("No results");
+            }
             return;
         }
 
@@ -216,40 +236,53 @@ public class App
 
             // Print column headings
             for (int i = 1; i <= columnCount; i++) {
-                System.out.print(metaData.getColumnLabel(i));
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine(metaData.getColumnLabel(i));
+                }
 
                 if (i < columnCount) {
-                    System.out.print(" | ");
+                    if (log.isLoggable(Level.FINE)) {
+                        log.fine(" | ");
+                    }
                 }
             }
-            System.out.println();
+
 
             // Print a separator
             for (int i = 1; i <= columnCount; i++) {
-                System.out.print("------------");
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("------------");
+                }
 
                 if (i < columnCount) {
-                    System.out.print("+");
+                    if (log.isLoggable(Level.FINE)) {
+                        log.fine("+");
+                    }
                 }
             }
-            System.out.println();
+
 
             // Print each row
             while (rs.next()) {
                 for (int i = 1; i <= columnCount; i++) {
                     Object value = rs.getObject(i);
 
-                    System.out.print(value == null ? "NULL" : value);
+                    if (log.isLoggable(Level.FINE)) {
+                        log.fine((value == null ? "NULL" : value).toString());
+                    }
 
                     if (i < columnCount) {
-                        System.out.print(" | ");
+                        if (log.isLoggable(Level.FINE)) {
+                            log.fine(" | ");
+                        }
                     }
                 }
-                System.out.println();
             }
 
         } catch (SQLException e) {
-            System.out.println("Error printing report: " + e.getMessage());
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("Error printing report: " + e.getMessage());
+            }
         }
     }
 
