@@ -1,6 +1,9 @@
 package com.napier.devops;
 
 import java.sql.*;
+import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * population report class
@@ -11,6 +14,11 @@ public class PopulationReport {
      * database connection
      */
     private Connection con;
+
+    /**
+     * Setup Logger
+     */
+    private static final Logger log = Logger.getLogger(App.class.getName());
 
     /**
      * population report constructor
@@ -32,7 +40,9 @@ public class PopulationReport {
 
             return rs;
         } catch (SQLException e) {
-            System.out.println(e);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine((Supplier<String>) e);
+            }
             return null;
         }
     }
@@ -50,7 +60,9 @@ public class PopulationReport {
 
             return rs;
         } catch (SQLException e) {
-            System.out.println(e);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine((Supplier<String>) e);
+            }
             return null;
         }
     }
@@ -68,7 +80,9 @@ public class PopulationReport {
 
             return rs;
         } catch (SQLException e) {
-            System.out.println(e);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine((Supplier<String>) e);
+            }
             return null;
         }
     }
@@ -86,7 +100,9 @@ public class PopulationReport {
 
             return rs;
         } catch (SQLException e) {
-            System.out.println(e);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine((Supplier<String>) e);
+            }
             return null;
         }
     }
@@ -104,7 +120,9 @@ public class PopulationReport {
 
             return rs;
         } catch (SQLException e) {
-            System.out.println(e);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine((Supplier<String>) e);
+            }
             return null;
         }
     }
@@ -122,7 +140,9 @@ public class PopulationReport {
 
             return rs;
         } catch (SQLException e) {
-            System.out.println(e);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine((Supplier<String>) e);
+            }
             return null;
         }
     }
@@ -140,7 +160,9 @@ public class PopulationReport {
 
             return rs;
         } catch (SQLException e) {
-            System.out.println(e);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine((Supplier<String>) e);
+            }
             return null;
         }
     }
@@ -158,7 +180,9 @@ public class PopulationReport {
 
             return rs;
         } catch (SQLException e) {
-            System.out.println(e);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine((Supplier<String>) e);
+            }
             return null;
         }
     }
@@ -195,7 +219,9 @@ public class PopulationReport {
 
             return rs;
         } catch (SQLException e) {
-            System.out.println(e);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine((Supplier<String>) e);
+            }
             return null;
         }
     }
@@ -211,7 +237,9 @@ public class PopulationReport {
 
             return rs;
         } catch (SQLException e) {
-            System.out.println(e);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine((Supplier<String>) e);
+            }
             return null;
         }
     }
@@ -231,7 +259,9 @@ public class PopulationReport {
 
             return rs;
         } catch (SQLException e) {
-            System.out.println(e);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine((Supplier<String>) e);
+            }
             return null;
         }
     }
@@ -252,7 +282,9 @@ public class PopulationReport {
 
             return rs;
         } catch (SQLException e) {
-            System.out.println(e);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine((Supplier<String>) e);
+            }
             return null;
         }
     }
@@ -271,7 +303,9 @@ public class PopulationReport {
             }
             return pstmt.executeQuery();
         } catch (SQLException e) {
-            System.out.println(e);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine((Supplier<String>) e);
+            }
             return null;
         }
     }
@@ -288,7 +322,9 @@ public class PopulationReport {
             ResultSet rs = stmt.executeQuery(query);
             return rs;
         } catch (SQLException e) {
-            System.out.println(e);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine((Supplier<String>) e);
+            }
             return null;
         }
     }

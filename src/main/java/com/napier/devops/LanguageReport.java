@@ -4,6 +4,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * language reports class
@@ -14,6 +17,11 @@ public class LanguageReport {
      * database connection
      */
     private Connection con;
+
+    /**
+     * Setup Logger
+     */
+    private static final Logger log = Logger.getLogger(App.class.getName());
 
     /**
      * language report constructor
@@ -35,7 +43,9 @@ public class LanguageReport {
 
             return rs;
         } catch (SQLException e) {
-            System.out.println(e);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine((Supplier<String>) e);
+            }
             return null;
         }
 
@@ -52,7 +62,9 @@ public class LanguageReport {
             ResultSet rs = stmt.executeQuery(query);
             return rs;
         } catch (SQLException e) {
-            System.out.println(e);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine((Supplier<String>) e);
+            }
             return null;
         }
     }

@@ -5,6 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * country reports class
@@ -15,6 +18,11 @@ public class CountryReport {
      * database connection
      */
     private Connection con;
+
+    /**
+     * Setup Logger
+     */
+    private static final Logger log = Logger.getLogger(App.class.getName());
 
     /**
      * country reports constructor
@@ -36,7 +44,9 @@ public class CountryReport {
 
             return rs;
         } catch (SQLException e) {
-            System.out.println(e);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine((Supplier<String>) e);
+            }
             return null;
         }
     }
@@ -55,7 +65,9 @@ public class CountryReport {
 
             return rs;
         } catch (SQLException e) {
-            System.out.println(e);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine((Supplier<String>) e);
+            }
             return null;
         }
     }
@@ -73,7 +85,9 @@ public class CountryReport {
 
             return rs;
         } catch (SQLException e) {
-            System.out.println(e);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine((Supplier<String>) e);
+            }
             return null;
         }
     }
@@ -93,7 +107,9 @@ public class CountryReport {
 
             return rs;
         } catch (SQLException e) {
-            System.out.println(e);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine((Supplier<String>) e);
+            }
             return null;
         }
     }
@@ -110,7 +126,9 @@ public class CountryReport {
 
         return rs;
         } catch (SQLException e) {
-            System.out.println(e);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine((Supplier<String>) e);
+            }
             return null;
         }
     }
@@ -128,7 +146,9 @@ public class CountryReport {
 
             return rs;
         } catch (SQLException e) {
-            System.out.println(e);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine((Supplier<String>) e);
+            }
             return null;
         }
     }
@@ -144,7 +164,9 @@ public class CountryReport {
             ResultSet rs = stmt.executeQuery(query);
             return rs;
         } catch (SQLException e) {
-            System.out.println(e);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine((Supplier<String>) e);
+            }
             return null;
         }
     }
