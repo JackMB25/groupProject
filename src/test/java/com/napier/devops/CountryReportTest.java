@@ -95,6 +95,27 @@ public class CountryReportTest {
         verify(stmt).executeQuery(
                 "SELECT c.Name AS cName, c.Population AS cPop FROM country as c WHERE c.Region='British Islands' ORDER BY cPop DESC;"
         );
+    }
 
+    /**
+     * Tests that getAllCountriesByRegion returns the mocked ResultSet
+     * and executes the expected SQL query for the specified region.
+     *
+     * @throws SQLException if a database error occurs
+     */
+    @Test
+    void getTopCountriesByRegionTest()  throws SQLException {
+
+        // Call the method being tested
+        ResultSet result = report.getTopCountriesByRegion("British Islands", 4);
+
+        // Call the method being tested
+        assertSame(rs, result);
+
+        // Verify that the correct SQL query was executed
+        verify(stmt).executeQuery("SELECT country.Code, country.Name, country.Continent, country.Region, country.Population, city.Name AS 'Capital' "
+                + "FROM country LEFT JOIN city ON country.Capital = city.ID "
+                + "WHERE country.Region = 'British Islands'"
+                + "ORDER BY country.Population DESC LIMIT 4;");
     }
 }
