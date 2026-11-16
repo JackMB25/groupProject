@@ -2,6 +2,7 @@ name: Software Engineering Methods CI
 
 on:
   push:
+    branches: [develop, master]
   pull_request:
     branches: [develop]
 
@@ -89,3 +90,13 @@ jobs:
 
       - name: Run Docker Compose
         run: docker compose up --abort-on-container-exit
+
+      - name: Create GitHub Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          automatic_release_tag: "latest"
+          files: |
+            ./target/*.jar
