@@ -136,4 +136,21 @@ public class CountryReportTest {
         // Verify that the correct SQL query was executed
         verify(stmt).executeQuery("SELECT country.Name as 'Country Name', country.Population as 'Country Population' FROM country ORDER By country.Population DESC LIMIT 4" );
     }
+    /**
+     * Tests that getTopNCountriesByContinent returns the mocked ResultSet
+     * and executes the expected SQL query for the specified continent and limit.
+     *
+     * @throws SQLException if a database error occurs
+     */
+    @Test
+    void getTopNCountriesByContinentTest()  throws SQLException {
+        // Call the method being tested
+        ResultSet result = report.getTopNCountriesByContinent("Europe",4);
+
+        // Call the method being tested
+        assertSame(rs, result);
+
+        // Verify that the correct SQL query was executed
+        verify(stmt).executeQuery("SELECT country.Name as 'Country Name', country.Population as 'Country Population' FROM country WHERE country.Continent ='Europe' ORDER BY country.Population DESC LIMIT 4");
+    }
 }
