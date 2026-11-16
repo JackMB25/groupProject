@@ -36,5 +36,19 @@ public class CountryReportTest {
         // Create the object to test
         report = new CountryReport(con);
     }
+    /**
+     * Tests that the countries world test method returns the mocked ResultSet and executes the expected SQL query.
+     * @throws SQLException
+     */
+    @Test
+    void getAllCountriesWorldTest () throws SQLException {
 
+        ResultSet result = report.getAllCountriesWorld();
+
+        assertSame(rs, result);
+
+        verify(stmt).executeQuery(
+                "SELECT c.Name AS cName, c.Population AS cPop FROM country as c ORDER BY cPop DESC;"
+        );
+    }
 }
