@@ -2,8 +2,12 @@ name: Software Engineering Methods CI
 
 on:
   push:
+    branches: [develop, master]
   pull_request:
     branches: [develop]
+
+permissions:
+  contents: write
 
 jobs:
   UnitTests:
@@ -89,3 +93,24 @@ jobs:
 
       - name: Run Docker Compose
         run: docker compose up --abort-on-container-exit
+
+      - name: Copy Output
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        run: docker container cp "$(docker compose ps -aq app):/tmp/reports" ./
+
+      - name: Deploy Reports
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        uses: JamesIves/github-pages-deploy-action@v4.2.5
+        with:
+          branch: reports
+          folder: reports
+
+      - name: Create GitHub Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          automatic_release_tag: "latest"
+          files: |
+            ./target/*.jar

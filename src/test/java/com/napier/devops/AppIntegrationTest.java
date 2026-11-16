@@ -150,7 +150,7 @@ public class AppIntegrationTest
         assertEquals("Seoul", names.get(1));
 
         List<Long> pops = numbers(cityReport.getTopNCitiesWorld(10), 2);
-        assertEquals(10500000L, pops.get(0));
+        assertEquals(10500000L, pops.get(0).longValue());
         assertDescending(pops);
     }
 
@@ -186,7 +186,7 @@ public class AppIntegrationTest
         List<Long> pops = numbers(cityReport.getTopNCitiesWorld(5000), 2);
         assertEquals(4079, pops.size());
         assertDescending(pops);
-        assertEquals(42L, pops.get(pops.size() - 1));
+        assertEquals(42L, pops.get(pops.size() - 1).longValue());
     }
 
     /**
